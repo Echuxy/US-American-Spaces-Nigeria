@@ -118,6 +118,17 @@ export default function Dashboard() {
               + New Report
             </button>
           )}
+          <button style={s.navBtn} onClick={() => navigate('/inventory')}>📦 Inventory</button>
+          <button style={s.navBtn} onClick={() => navigate('/proposals')}>🎯 Proposals</button>
+          <button style={s.navBtn} onClick={() => navigate('/calendar')}>📅 Calendar</button>
+          <button style={s.navBtn} onClick={() => navigate('/announcements')}>📢 Notices</button>
+          <button style={s.navBtn} onClick={() => navigate('/eod-notes')}>📓 EOD Notes</button>
+          {(profile?.role === 'admin' || profile?.role === 'pao' || profile?.role === 'specialist' || profile?.role === 'coordinator') && (
+            <button style={s.navBtn} onClick={() => navigate('/analytics')}>📊 Analytics</button>
+          )}
+          {profile?.role === 'admin' && (
+            <button style={s.navBtn} onClick={() => navigate('/admin/users')}>👥 Users</button>
+          )}
           <button style={s.signOutBtn} onClick={signOut}>Sign Out</button>
         </div>
       </div>
@@ -318,11 +329,12 @@ const s = {
   page: { minHeight: '100vh', background: '#f1f5f9', fontFamily: "'Segoe UI', sans-serif" },
   topbar: {
     background: 'linear-gradient(135deg, #1a1f3a, #2d3561)',
-    padding: '0 24px',
+    padding: '8px 16px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: '64px',
+    flexWrap: 'wrap',
+    gap: '8px',
     position: 'sticky',
     top: 0,
     zIndex: 100,
@@ -335,13 +347,19 @@ const s = {
   },
   appTitle: { margin: 0, fontSize: '16px', fontWeight: 700, color: '#fff' },
   appSub: { margin: 0, fontSize: '11px', color: '#93a4d4' },
-  topbarRight: { display: 'flex', alignItems: 'center', gap: '12px' },
+  topbarRight: { display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' },
   userBadge: { fontSize: '12px', color: '#93a4d4' },
   newReportBtn: {
     padding: '8px 16px',
     background: 'linear-gradient(135deg, #B22234, #8b1c2a)',
     color: '#fff', border: 'none', borderRadius: '8px',
     fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+  },
+  navBtn: {
+    padding: '7px 12px',
+    background: 'rgba(255,255,255,0.1)',
+    color: '#fff', border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px', fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap',
   },
   signOutBtn: {
     padding: '8px 14px',
