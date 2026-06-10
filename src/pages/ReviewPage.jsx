@@ -109,13 +109,10 @@ export default function ReviewPage() {
           <button style={s.backBtn} onClick={() => navigate('/dashboard')}>← Back</button>
           <div>
             <h2 style={s.pageTitle}>{report.programme_title}</h2>
-            <p style={s.pageSub}>
-              {report.american_spaces?.name} · {report.activity_date}
-            </p>
+            <p style={s.pageSub}>{report.american_spaces?.name} · {report.activity_date}</p>
           </div>
-          <span style={{ ...s.statusBadge, background: statusInfo?.color }}>
-            {statusInfo?.label}
-          </span>
+          <span style={{ ...s.statusBadge, background: statusInfo?.color }}>{statusInfo?.label}</span>
+          <button style={s.printBtn} onClick={() => window.print()}>🖨️ Print</button>
         </div>
 
         {error && <div style={s.errorBox}>{error}</div>}
@@ -350,6 +347,7 @@ const s = {
     marginBottom: '20px',
     flexWrap: 'wrap',
   },
+  printBtn: { padding: '8px 14px', background: '#374151', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px' },
   backBtn: {
     background: 'rgba(255,255,255,0.15)',
     border: '1px solid rgba(255,255,255,0.3)',

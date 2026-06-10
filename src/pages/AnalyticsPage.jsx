@@ -34,6 +34,51 @@ export default function AnalyticsPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  async function exportDOCX() {
+    setExporting(true)
+    const { label } = getDateRange()
+    const lines = [
+      `AMERICAN SPACES NIGERIA — ${label.toUpperCase()}`,
+      `Generated: ${new Date().toLocaleString('en-NG')}`,
+      `Scope: ${filterSpace ? spaces.find(s=>s.id===filterSpace)?.name : 'All American Spaces Nigeria'}`,
+      '',
+      '=== SUMMARY ===',
+      `Total Reports: ${totalReports}`,
+      `Total Attendance: ${totalAttendance.toLocaleString()}`,
+      `Total Expenditure: ₦${totalSpent.toLocaleString()}`,
+      `EOD Notes Filed: ${eodNotes.length}`,
+      `Total Patron Visits: ${totalVisitors.toLocaleString()}`,
+      `Approved Proposals: ${approvedProposals}`,
+      '',
+      '=== REPORTS BY PILLAR ===',
+      ...byPillar.map(p => `${p.label}: ${p.count} reports, ${p.attendance} attendees`),
+      '',
+      '=== STRATEGIC PRIORITY ALIGNMENT ===',
+      ...byPriority.map(p => `${p.label}: ${p.count} reports`),
+      '',
+      '=== SPACE PERFORMANCE ===',
+      ...bySpace.map((s,i) => `${i+1}. ${s.name}: ${s.count} reports, ${s.attendance} attendees, ₦${s.spent.toLocaleString()}`),
+      '',
+      aiSummary ? '=== AI EXECUTIVE SUMMARY ===' : '',
+      aiSummary || '',
+    ]
+    const content = lines.join('\n')
+    const blob = new Blob([content], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `AmericanSpacesNigeria_${label.replace(/\s+/g,'_')}.doc`
+    a.click()
+    URL.revokeObjectURL(url)
+    setSuccess('✅ DOCX report exported successfully.')
+    setExporting(false)
+  }
+
+  function printReport() {
+    const { label } = getDateRange()
+    window.print()
+  }
+
   useEffect(() => { loadSpaces() }, [])
 
   async function loadSpaces() {
@@ -75,7 +120,7 @@ export default function AnalyticsPage() {
     let rq = supabase.from('reports')
       .select(`*, american_spaces(name,state)`)
       .gte('activity_date', start).lte('activity_date', end)
-      .eq('status', 'approved')
+      .in('status', ['approved', 'coordinator_reviewed', 'specialist_reviewed', 'submitted'])
     if (filterSpace) rq = rq.eq('space_id', filterSpace)
     const { data: r } = await rq
     setReports(r ?? [])
@@ -431,13 +476,21 @@ Use formal diplomatic language. Be specific with numbers. Write approximately 60
                 </p>
               </div>
               <div style={s.exportBtns}>
+                <button style={{ ...s.exportBtn, background: '#7c3aed', opacity: exporting ? 0.7 : 1 }}
+                  onClick={exportDOCX} disabled={exporting}>
+                  📝 Export DOCX
+                </button>
                 <button style={{ ...s.exportBtn, opacity: exporting ? 0.7 : 1 }}
                   onClick={exportExcel} disabled={exporting}>
-                  📊 Export Excel/CSV
+                  📊 Export Excel
                 </button>
                 <button style={{ ...s.exportBtn, background: '#B22234', opacity: exporting ? 0.7 : 1 }}
                   onClick={exportPDF} disabled={exporting}>
                   📄 Export PDF
+                </button>
+                <button style={{ ...s.exportBtn, background: '#374151', opacity: exporting ? 0.7 : 1 }}
+                  onClick={printReport} disabled={exporting}>
+                  🖨️ Print
                 </button>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { REPORT_STATUSES, PILLARS, STRATEGIC_PRIORITIES } from '../lib/programmeData'
+import { useEffect as _useEffect, useState as _useState } from 'react'
 
 export default function Dashboard() {
   const { profile, canReview, isAdmin, isPAO, isSpecialist, isCoordinator, signOut } = useAuth()

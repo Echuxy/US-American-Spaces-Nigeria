@@ -96,7 +96,7 @@ export const STRATEGIC_PRIORITIES = [
   'Celebrating American Excellence',
 ];
 
-export const AI_WORD_LIMITS = [100, 150, 200, 300, 500, 1000];
+export const AI_WORD_LIMITS = [300, 400, 500, 750, 1000];
 
 export const REPORT_STATUSES = {
   draft: { label: 'Draft', color: '#6b7280' },
