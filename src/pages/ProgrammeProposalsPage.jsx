@@ -56,7 +56,7 @@ export default function ProgrammeProposalsPage() {
   const { profile, isAdmin, isPAO, isSpecialist, isCoordinator } = useAuth()
   const navigate = useNavigate()
   const canReview = isAdmin || isPAO || isSpecialist || isCoordinator
-  const isDirector = profile?.role === 'space_director'
+  const isDirector = profile?.role === 'space_director' || profile?.role === 'admin'
 
   const [proposals, setProposals] = useState([])
   const [loading, setLoading] = useState(true)

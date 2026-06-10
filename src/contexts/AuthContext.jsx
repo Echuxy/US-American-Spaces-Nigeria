@@ -25,12 +25,20 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function fetchProfile(uid) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*, american_spaces(id, name, state, city)')
-      .eq('id', uid)
-      .single()
-    if (!error) setProfile(data)
+    // Retry up to 3 times in case of timing issues
+    let data, error
+    for (let i = 0; i < 3; i++) {
+      const result = await supabase
+        .from('profiles')
+        .select('*, american_spaces(id, name, state, city)')
+        .eq('id', uid)
+        .single()
+      data = result.data
+      error = result.error
+      if (data && data.role) break
+      await new Promise(r => setTimeout(r, 500))
+    }
+    if (data) setProfile(data)
     setLoading(false)
   }
 

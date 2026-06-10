@@ -113,7 +113,7 @@ export default function Dashboard() {
           <span style={s.userBadge}>
             {profile?.full_name} · <em>{profile?.role?.replace('_', ' ')}</em>
           </span>
-          {profile?.role === 'space_director' && (
+          {(profile?.role === 'space_director' || profile?.role === 'admin') && (
             <button style={s.newReportBtn} onClick={() => navigate('/report/new')}>
               + New Report
             </button>
