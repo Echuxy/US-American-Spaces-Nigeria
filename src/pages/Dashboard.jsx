@@ -154,7 +154,7 @@ export default function Dashboard() {
 
       <div style={s.body}>
         {/* Announcements tiles */}
-        {announcements.length > 0 && (
+        {(
           <div style={s.annSection}>
             <div style={s.annSectionHeader}>
               <h3 style={s.annSectionTitle}>📢 Announcements & Notices</h3>
