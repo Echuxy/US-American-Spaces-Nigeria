@@ -44,13 +44,19 @@ export default function Dashboard() {
     setReports(data ?? [])
 
     // Load approved announcements
-    const { data: ann } = await supabase.from('announcements')
-      .select('*')
-      .eq('status', 'approved')
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(6)
-    setAnnouncements(ann ?? [])
+try {
+  const { data: ann } = await supabase
+    .from('announcements')
+    .select('id, title, body, is_pinned, expires_at, created_at, status')
+    .eq('status', 'approved')
+    .order('is_pinned', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(6)
+  setAnnouncements(ann ?? [])
+} catch(e) {
+  console.error('Announcements error:', e)
+  setAnnouncements([])
+}
 
     setLoading(false)
   }
