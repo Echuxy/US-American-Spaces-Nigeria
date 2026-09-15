@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Summit2026 from './pages/Summit2026'
+import SummitControlRoom from './pages/SummitControlRoom'
 
 // Reports
 import ReportForm from './pages/ReportForm'
@@ -76,6 +77,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/summit-2026" element={<Summit2026 />} />
+          <Route path="/summit-2026/control-room" element={<ProtectedRoute><SummitControlRoom /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/report/new" element={<ProtectedRoute><DirectorOnly><ReportForm /></DirectorOnly></ProtectedRoute>} />
           <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
