@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { summitSupabase } from '../lib/summitSupabase'
 
-const COORDINATOR_EMAIL = 'EdehSC@state.gov'
+const COORDINATOR_EMAIL = 'amcenterlagosinfo@gmail.com'
 
 export default function SummitCoordinatorLogin() {
   const navigate = useNavigate()
@@ -15,55 +15,26 @@ export default function SummitCoordinatorLogin() {
 
   useEffect(() => {
     let mounted = true
-    if (!summitSupabase) {
-      setLoading(false)
-      setError('Summit backend configuration is missing.')
-      return () => { mounted = false }
-    }
-
+    if (!summitSupabase) { setLoading(false); setError('Summit backend configuration is missing.'); return () => { mounted = false } }
     summitSupabase.auth.getSession().then(({ data }) => {
       if (!mounted) return
       const currentEmail = data.session?.user?.email || ''
-      setSessionEmail(currentEmail)
-      setLoading(false)
-      if (currentEmail && currentEmail.toLowerCase() === COORDINATOR_EMAIL.toLowerCase()) {
-        navigate('/summit-2026/control-room', { replace: true })
-      }
+      setSessionEmail(currentEmail); setLoading(false)
+      if (currentEmail && currentEmail.toLowerCase() === COORDINATOR_EMAIL.toLowerCase()) navigate('/summit-2026/control-room', { replace: true })
     })
-
     return () => { mounted = false }
   }, [navigate])
 
-  if (loading) {
-    return <div className="summit-login"><div className="login-card">Checking Summit coordinator session…</div></div>
-  }
-
-  if (sessionEmail && sessionEmail.toLowerCase() !== COORDINATOR_EMAIL.toLowerCase()) {
-    return <div className="summit-login"><div className="login-card"><div className="eyebrow">SUMMIT OF AMERICAN SPACES IN NIGERIA 2026</div><h1>Coordinator Access</h1><p>This account is signed in to the Summit backend but is not authorized for the Control Room.</p><button className="primary" onClick={async () => { await summitSupabase?.auth.signOut(); setSessionEmail('') }}>Sign out</button></div></div>
-  }
+  if (loading) return <div className="summit-login"><div className="login-card">Checking Summit coordinator session…</div></div>
+  if (sessionEmail && sessionEmail.toLowerCase() !== COORDINATOR_EMAIL.toLowerCase()) return <div className="summit-login"><div className="login-card"><div className="eyebrow">SUMMIT OF AMERICAN SPACES IN NIGERIA 2026</div><h1>Coordinator Access</h1><p>This account is signed in to the Summit backend but is not authorized for the Control Room.</p><button className="primary" onClick={async () => { await summitSupabase?.auth.signOut(); setSessionEmail('') }}>Sign out</button></div></div>
 
   const signIn = async event => {
-    event.preventDefault()
-    setError('')
-    setSubmitting(true)
-    if (!summitSupabase) {
-      setError('Summit backend configuration is missing.')
-      setSubmitting(false)
-      return
-    }
+    event.preventDefault(); setError(''); setSubmitting(true)
+    if (!summitSupabase) { setError('Summit backend configuration is missing.'); setSubmitting(false); return }
     const { data, error: signInError } = await summitSupabase.auth.signInWithPassword({ email: email.trim(), password })
-    if (signInError) {
-      setError(signInError.message)
-      setSubmitting(false)
-      return
-    }
+    if (signInError) { setError(signInError.message); setSubmitting(false); return }
     const signedInEmail = data.user?.email || ''
-    if (signedInEmail.toLowerCase() !== COORDINATOR_EMAIL.toLowerCase()) {
-      await summitSupabase.auth.signOut()
-      setError('This account is not authorized for the Summit Control Room.')
-      setSubmitting(false)
-      return
-    }
+    if (signedInEmail.toLowerCase() !== COORDINATOR_EMAIL.toLowerCase()) { await summitSupabase.auth.signOut(); setError('This account is not authorized for the Summit Control Room.'); setSubmitting(false); return }
     navigate('/summit-2026/control-room', { replace: true })
   }
 
