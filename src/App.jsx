@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Summit2026 from './pages/Summit2026'
 import SummitControlRoom from './pages/SummitControlRoom'
+import SummitRegistration from './pages/SummitRegistration'
 
 // Reports
 import ReportForm from './pages/ReportForm'
@@ -76,6 +77,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/summit-2026/register" element={<SummitRegistration />} />
           <Route path="/summit-2026" element={<Summit2026 />} />
           <Route path="/summit-2026/control-room" element={<ProtectedRoute><SummitControlRoom /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
