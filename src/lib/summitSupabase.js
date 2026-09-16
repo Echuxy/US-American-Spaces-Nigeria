@@ -10,8 +10,11 @@ const SUPABASE_KEY =
 export const summitSupabase = SUPABASE_URL && SUPABASE_KEY
   ? createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: {
-        persistSession: false,
-        autoRefreshToken: false,
+        // Participant pages do not require an auth session, while the
+        // dedicated coordinator Control Room does. Persisting the session
+        // keeps the coordinator signed in across page refreshes.
+        persistSession: true,
+        autoRefreshToken: true,
         detectSessionInUrl: false,
       },
     })
