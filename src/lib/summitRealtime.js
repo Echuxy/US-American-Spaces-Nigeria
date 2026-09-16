@@ -81,6 +81,7 @@ export const summitEventTypes = {
   SLIDE_CHANGED: 'slide_changed',
   ANNOUNCEMENT: 'announcement',
   POLL_PUBLISHED: 'poll_published',
+  POLL_RESPONSE: 'poll_response',
   POLL_CLOSED: 'poll_closed',
   PARKING_POST: 'parking_post',
   PARKING_MODERATION: 'parking_moderation',
