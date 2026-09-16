@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { isSupabaseConfigured, supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
 
@@ -9,6 +9,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      setLoading(false)
+      return undefined
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
@@ -25,6 +30,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function fetchProfile(uid) {
+    if (!supabase) return
     // Retry up to 3 times in case of timing issues
     let data, error
     for (let i = 0; i < 3; i++) {
@@ -43,12 +49,13 @@ export function AuthProvider({ children }) {
   }
 
   async function signIn(email, password) {
+    if (!supabase) return { error: new Error('Existing application Supabase configuration is missing.') }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return { error }
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    if (supabase) await supabase.auth.signOut()
     setProfile(null)
   }
 
