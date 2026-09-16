@@ -116,10 +116,10 @@ function ExistingApplicationRoutes() {
         <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
         <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
         <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
         <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
         <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></Route>} />
+        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
         <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
