@@ -71,29 +71,46 @@ function Spinner() {
   )
 }
 
-export default function App() {
+function ExistingApplicationRoutes() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/summit-2026/register" element={<SummitRegistration />} />
-          <Route path="/summit-2026" element={<Summit2026 />} />
-          <Route path="/summit-2026/control-room" element={<ProtectedRoute><SummitControlRoom /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/report/new" element={<ProtectedRoute><DirectorOnly><ReportForm /></DirectorOnly></ProtectedRoute>} />
-          <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
-          <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-          <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
-          <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
-          <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
-          <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
-          <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-          <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
-          <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/report/new" element={<ProtectedRoute><DirectorOnly><ReportForm /></DirectorOnly></ProtectedRoute>} />
+        <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
+        <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+        <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
+        <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
+        <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></Route>} />
+        <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
     </AuthProvider>
+  )
+}
+
+function SummitControlRoomRoute() {
+  return (
+    <AuthProvider>
+      <ProtectedRoute><SummitControlRoom /></ProtectedRoute>
+    </AuthProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Summit participant experience is intentionally independent of the existing application auth/Supabase client. */}
+        <Route path="/summit-2026/register" element={<SummitRegistration />} />
+        <Route path="/summit-2026" element={<Summit2026 />} />
+        <Route path="/summit-2026/control-room" element={<SummitControlRoomRoute />} />
+        <Route path="*" element={<ExistingApplicationRoutes />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
