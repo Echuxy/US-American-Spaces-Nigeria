@@ -18,3 +18,16 @@ export const summitSupabase = SUPABASE_URL && SUPABASE_KEY
   : null
 
 export const summitBackendEnabled = Boolean(summitSupabase)
+
+export function getSummitDeviceId() {
+  if (typeof window === 'undefined') return 'server'
+  const key = 'summit2026-device-id'
+  let value = window.localStorage.getItem(key)
+  if (!value) {
+    value = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+    window.localStorage.setItem(key, value)
+  }
+  return value
+}
