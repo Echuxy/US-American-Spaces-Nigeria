@@ -13,9 +13,7 @@ export default function SummitRegistration() {
     return `${window.location.origin}/summit-2026`
   }, [])
 
-  const qrUrl = useMemo(() => {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=${encodeURIComponent(summitUrl)}`
-  }, [summitUrl])
+  const qrUrl = useMemo(() => `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=${encodeURIComponent(summitUrl)}`, [summitUrl])
 
   const register = (event) => {
     event.preventDefault()
@@ -27,13 +25,13 @@ export default function SummitRegistration() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#f5f7fb', fontFamily: 'Inter,system-ui,sans-serif', padding: '32px 18px' }}>
-      <section style={{ maxWidth: 760, margin: '0 auto', background: '#fff', border: '1px solid #dce3ec', borderRadius: 18, padding: 28, boxShadow: '0 12px 40px rgba(23,59,104,.08)' }}>
+    <main style={{ minHeight: '100vh', background: '#f5f7fb', fontFamily: 'Inter,system-ui,sans-serif', padding: 'clamp(18px,5vw,48px) 14px' }}>
+      <section style={{ maxWidth: 860, margin: '0 auto', background: '#fff', border: '1px solid #dce3ec', borderRadius: 18, padding: 'clamp(20px,4vw,32px)', boxShadow: '0 12px 40px rgba(23,59,104,.08)' }}>
         <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.12em', color: '#718096' }}>U.S. DIPLOMATIC MISSION NIGERIA • PUBLIC DIPLOMACY SECTION</div>
         <h1 style={{ color: '#173b68', lineHeight: 1.1, marginBottom: 8 }}>Summit of American Spaces in Nigeria 2026</h1>
         <p style={{ color: '#526277', lineHeight: 1.55, marginTop: 0 }}>Participant access • September 21–23, 2026 • Black Diamond Suites, Victoria Island, Lagos</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 240px', gap: 28, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(190px,240px)', gap: 28, alignItems: 'start' }}>
           <div>
             {registered ? (
               <div>
@@ -53,7 +51,7 @@ export default function SummitRegistration() {
 
           <aside style={{ textAlign: 'center', border: '1px solid #e1e7ef', borderRadius: 14, padding: 14, background: '#fafbfd' }}>
             <div style={{ fontSize: 11, fontWeight: 800, color: '#526277', marginBottom: 8 }}>SUMMIT ACCESS QR</div>
-            <img src={qrUrl} alt="QR code for the Summit participant page" width="210" height="210" style={{ display: 'block', margin: '0 auto', background: '#fff' }} />
+            <img src={qrUrl} alt="QR code for the Summit participant page" width="210" height="210" style={{ display: 'block', maxWidth: '100%', height: 'auto', margin: '0 auto', background: '#fff' }} />
             <div style={{ marginTop: 10, fontSize: 10, lineHeight: 1.4, color: '#718096', wordBreak: 'break-all' }}>{summitUrl}</div>
           </aside>
         </div>
@@ -62,6 +60,7 @@ export default function SummitRegistration() {
           <strong>Prototype status:</strong> participant registration is currently device-local. Cross-device live sync will be enabled after the Summit backend is secured with appropriate access policies.
         </div>
       </section>
+      <style>{`@media(max-width:620px){section>div:nth-of-type(1){grid-template-columns:1fr!important}aside{max-width:280px;margin:0 auto;width:100%;box-sizing:border-box}}`}</style>
     </main>
   )
 }
