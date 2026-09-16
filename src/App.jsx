@@ -1,5 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { summitSupabase } from './lib/summitSupabase'
 
 // Core pages
 import Login from './pages/Login'
@@ -7,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Summit2026 from './pages/Summit2026'
 import SummitControlRoom from './pages/SummitControlRoom'
 import SummitRegistration from './pages/SummitRegistration'
+import SummitCoordinatorLogin from './pages/SummitCoordinatorLogin'
 
 // Reports
 import ReportForm from './pages/ReportForm'
@@ -23,6 +26,8 @@ import ProgrammeProposalsPage from './pages/ProgrammeProposalsPage'
 import CalendarPage from './pages/CalendarPage'
 import EODNotesPage from './pages/EODNotesPage'
 import AnalyticsPage from './pages/AnalyticsPage'
+
+const SUMMIT_COORDINATOR_EMAIL = 'EdehSC@state.gov'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -59,6 +64,36 @@ function PublicRoute({ children }) {
   return children
 }
 
+function SummitCoordinatorGate() {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [authorized, setAuthorized] = useState(false)
+
+  useEffect(() => {
+    if (!summitSupabase) {
+      setLoading(false)
+      return undefined
+    }
+
+    const checkSession = session => {
+      const email = session?.user?.email || ''
+      const allowed = email.toLowerCase() === SUMMIT_COORDINATOR_EMAIL.toLowerCase()
+      setAuthorized(allowed)
+      setLoading(false)
+      if (!allowed) navigate('/summit-2026/control-room/login', { replace: true })
+    }
+
+    summitSupabase.auth.getSession().then(({ data }) => checkSession(data.session))
+    const { data: listener } = summitSupabase.auth.onAuthStateChange((_event, session) => checkSession(session))
+    return () => listener.subscription.unsubscribe()
+  }, [navigate])
+
+  if (loading) return <Spinner />
+  if (!summitSupabase) return <Navigate to="/summit-2026/control-room/login" replace />
+  if (!authorized) return null
+  return <SummitControlRoom />
+}
+
 function Spinner() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1a1f3a, #2d3561)', fontFamily: "'Segoe UI', sans-serif" }}>
@@ -81,22 +116,14 @@ function ExistingApplicationRoutes() {
         <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
         <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
         <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></ProtectedRoute>} />
         <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
         <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></Route>} />
         <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </AuthProvider>
-  )
-}
-
-function SummitControlRoomRoute() {
-  return (
-    <AuthProvider>
-      <ProtectedRoute><SummitControlRoom /></ProtectedRoute>
     </AuthProvider>
   )
 }
@@ -108,7 +135,8 @@ export default function App() {
         {/* Summit participant experience is intentionally independent of the existing application auth/Supabase client. */}
         <Route path="/summit-2026/register" element={<SummitRegistration />} />
         <Route path="/summit-2026" element={<Summit2026 />} />
-        <Route path="/summit-2026/control-room" element={<SummitControlRoomRoute />} />
+        <Route path="/summit-2026/control-room/login" element={<SummitCoordinatorLogin />} />
+        <Route path="/summit-2026/control-room" element={<SummitCoordinatorGate />} />
         <Route path="*" element={<ExistingApplicationRoutes />} />
       </Routes>
     </BrowserRouter>
