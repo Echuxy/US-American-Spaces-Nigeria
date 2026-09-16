@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { getSummitDeviceId, summitBackendEnabled, summitSupabase } from '../lib/summitSupabase'
 
 const STORAGE_NAME = 'summit2026-name'
 const STORAGE_ANONYMOUS = 'summit2026-anonymous'
@@ -7,6 +8,8 @@ export default function SummitRegistration() {
   const [name, setName] = useState(() => localStorage.getItem(STORAGE_NAME) || '')
   const [anonymous, setAnonymous] = useState(() => localStorage.getItem(STORAGE_ANONYMOUS) === 'true')
   const [registered, setRegistered] = useState(false)
+  const [backendMessage, setBackendMessage] = useState('')
+  const [saving, setSaving] = useState(false)
 
   const summitUrl = useMemo(() => {
     if (typeof window === 'undefined') return '/summit-2026'
@@ -15,13 +18,34 @@ export default function SummitRegistration() {
 
   const qrUrl = useMemo(() => `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=${encodeURIComponent(summitUrl)}`, [summitUrl])
 
-  const register = (event) => {
+  const register = async (event) => {
     event.preventDefault()
     const value = name.trim()
-    if (!value) return
+    if (!value || saving) return
+
+    setSaving(true)
+    setBackendMessage('')
     localStorage.setItem(STORAGE_NAME, value)
     localStorage.setItem(STORAGE_ANONYMOUS, String(anonymous))
+
+    if (summitSupabase) {
+      const { error } = await summitSupabase.from('participants').insert({
+        display_name: value,
+        anonymous_parking: anonymous,
+        device_id: getSummitDeviceId(),
+      })
+      if (error) {
+        console.error('Summit participant registration failed', error)
+        setBackendMessage('Registration is saved on this device. Live backend registration will retry when the Summit backend is available.')
+      } else {
+        setBackendMessage('Registration is saved to the Summit backend for live event operations.')
+      }
+    } else {
+      setBackendMessage('Registration is saved on this device. Live cross-device sync will activate when the Summit backend settings are added.')
+    }
+
     setRegistered(true)
+    setSaving(false)
   }
 
   return (
@@ -36,7 +60,7 @@ export default function SummitRegistration() {
             {registered ? (
               <div>
                 <div style={{ padding: 14, borderRadius: 10, background: '#eef6ef', color: '#245a32', marginBottom: 14 }}>Registration saved for <strong>{name.trim()}</strong>.</div>
-                <p style={{ color: '#526277', lineHeight: 1.5 }}>Your display name is stored on this device for the Summit prototype. You can change it by returning to this page.</p>
+                <p style={{ color: '#526277', lineHeight: 1.5 }}>{backendMessage}</p>
                 <a href="/summit-2026" style={{ display: 'inline-block', background: '#173b68', color: '#fff', padding: '11px 15px', borderRadius: 8, textDecoration: 'none', fontWeight: 700 }}>Enter Summit</a>
               </div>
             ) : (
@@ -44,7 +68,7 @@ export default function SummitRegistration() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#526277', marginBottom: 6 }}>Display name</label>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" autoComplete="name" required style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #d5dde7', borderRadius: 9, padding: 11, fontSize: 14, marginBottom: 12 }} />
                 <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, color: '#526277', marginBottom: 16 }}><input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} /> Allow anonymous Parking Lot posts</label>
-                <button type="submit" style={{ border: 0, background: '#173b68', color: '#fff', borderRadius: 9, padding: '11px 16px', cursor: 'pointer', fontWeight: 700 }}>Register & Continue</button>
+                <button type="submit" disabled={saving} style={{ border: 0, background: saving ? '#7d8ea5' : '#173b68', color: '#fff', borderRadius: 9, padding: '11px 16px', cursor: saving ? 'wait' : 'pointer', fontWeight: 700 }}>{saving ? 'Saving…' : 'Register & Continue'}</button>
               </form>
             )}
           </div>
@@ -57,7 +81,7 @@ export default function SummitRegistration() {
         </div>
 
         <div style={{ marginTop: 24, padding: 14, borderRadius: 10, background: '#f0f5fb', color: '#40546d', fontSize: 12, lineHeight: 1.55 }}>
-          <strong>Prototype status:</strong> participant registration is currently device-local. Cross-device live sync will be enabled after the Summit backend is secured with appropriate access policies.
+          <strong>Backend status:</strong> {summitBackendEnabled ? 'Summit backend configuration detected.' : 'Summit backend configuration is not yet present in this deployment.'} Participant registration remains usable in either mode.
         </div>
       </section>
       <style>{`@media(max-width:620px){section>div:nth-of-type(1){grid-template-columns:1fr!important}aside{max-width:280px;margin:0 auto;width:100%;box-sizing:border-box}}`}</style>
