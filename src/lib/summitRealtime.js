@@ -26,6 +26,7 @@ export function createSummitRealtime() {
   let channel = null
   let channelReady = false
   let closed = false
+  let heartbeat = null
   const listeners = new Set()
   const seenIds = new Set()
   const pending = []
@@ -75,15 +76,22 @@ export function createSummitRealtime() {
     } catch (error) { console.error('Summit database persistence failed', error) }
   }
 
+  const touchParticipant = async () => {
+    if (!summitSupabase || closed || typeof window === 'undefined' || !localStorage.getItem('summit2026-name')) return
+    const { error } = await summitSupabase.rpc('touch_summit_participant', { p_device_id:getSummitDeviceId() })
+    if (error) console.error('Summit participant heartbeat failed', error)
+  }
+
   if (summitSupabase) {
-    if (typeof window !== 'undefined' && localStorage.getItem('summit2026-name')) {
-      void summitSupabase.rpc('touch_summit_participant', { p_device_id:getSummitDeviceId() })
-    }
     channel = summitSupabase.channel(CHANNEL_NAME, { config:{ broadcast:{ self:false, ack:true } } })
     channel.on('broadcast',{event:'summit-event'},event=>{ const message=event?.payload; if(message?.id) deliver(message) }).subscribe((status,error)=>{
-      if(status==='SUBSCRIBED'){ channelReady=true; while(pending.length) void sendSupabase(pending.shift()) }
-      else if(error) console.error('Summit Realtime channel error',status,error)
+      if(status==='SUBSCRIBED'){
+        channelReady=true
+        while(pending.length) void sendSupabase(pending.shift())
+        void touchParticipant()
+      } else if(error) console.error('Summit Realtime channel error',status,error)
     })
+    heartbeat = window.setInterval(touchParticipant, 2 * 60 * 1000)
     Promise.all([
       summitSupabase.from('parking_lot_posts').select('id,day_id,text,display_name,anonymous,votes,visible,pinned,created_at').eq('visible',true).order('created_at',{ascending:true}),
       summitSupabase.from('polls').select('id,question,options,created_at').eq('status','open').order('created_at',{ascending:false}).limit(1),
@@ -104,7 +112,7 @@ export function createSummitRealtime() {
   }
   const subscribe = listener => { listeners.add(listener); return () => listeners.delete(listener) }
   const getRecent = () => readEvents()
-  const close = () => { closed=true; if(channel&&summitSupabase) summitSupabase.removeChannel(channel); listeners.clear(); seenIds.clear(); pending.length=0 }
+  const close = () => { closed=true; if(heartbeat) window.clearInterval(heartbeat); if(channel&&summitSupabase) summitSupabase.removeChannel(channel); listeners.clear(); seenIds.clear(); pending.length=0 }
   return {publish,subscribe,getRecent,close,backendEnabled:Boolean(summitSupabase)}
 }
 
