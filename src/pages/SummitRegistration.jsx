@@ -29,11 +29,13 @@ export default function SummitRegistration() {
     localStorage.setItem(STORAGE_ANONYMOUS, String(anonymous))
 
     if (summitSupabase) {
-      const { error } = await summitSupabase.from('participants').insert({
+      const deviceId = getSummitDeviceId()
+      const { error } = await summitSupabase.from('participants').upsert({
         display_name: value,
         anonymous_parking: anonymous,
-        device_id: getSummitDeviceId(),
-      })
+        device_id: deviceId,
+        last_seen_at: new Date().toISOString(),
+      }, { onConflict: 'device_id' })
       if (error) {
         console.error('Summit participant registration failed', error)
         setBackendMessage('Registration is saved on this device. Live backend registration will retry when the Summit backend is available.')
