@@ -27,7 +27,7 @@ import CalendarPage from './pages/CalendarPage'
 import EODNotesPage from './pages/EODNotesPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 
-const SUMMIT_COORDINATOR_EMAIL = 'EdehSC@state.gov'
+const SUMMIT_COORDINATOR_EMAIL = 'amcenterlagosinfo@gmail.com'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -70,11 +70,7 @@ function SummitCoordinatorGate() {
   const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    if (!summitSupabase) {
-      setLoading(false)
-      return undefined
-    }
-
+    if (!summitSupabase) { setLoading(false); return undefined }
     const checkSession = session => {
       const email = session?.user?.email || ''
       const allowed = email.toLowerCase() === SUMMIT_COORDINATOR_EMAIL.toLowerCase()
@@ -82,63 +78,44 @@ function SummitCoordinatorGate() {
       setLoading(false)
       if (!allowed) navigate('/summit-2026/control-room/login', { replace: true })
     }
-
     summitSupabase.auth.getSession().then(({ data }) => checkSession(data.session))
     const { data: listener } = summitSupabase.auth.onAuthStateChange((_event, session) => checkSession(session))
     return () => listener.subscription.unsubscribe()
   }, [navigate])
 
   if (loading) return <Spinner />
-  if (!summitSupabase) return <Navigate to="/summit-2026/control-room/login" replace />
-  if (!authorized) return null
+  if (!summitSupabase || !authorized) return null
   return <SummitControlRoom />
 }
 
 function Spinner() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1a1f3a, #2d3561)', fontFamily: "'Segoe UI', sans-serif" }}>
-      <div style={{ textAlign: 'center', color: '#fff' }}>
-        <div style={{ width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.2)', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
-        <p style={{ margin: 0, fontSize: '14px', color: '#93a4d4' }}>Loading...</p>
-      </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  )
+  return <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'linear-gradient(135deg,#1a1f3a,#2d3561)', fontFamily:"'Segoe UI',sans-serif" }}><div style={{ textAlign:'center', color:'#fff' }}><div style={{ width:'40px',height:'40px',border:'3px solid rgba(255,255,255,.2)',borderTop:'3px solid #fff',borderRadius:'50%',animation:'spin .8s linear infinite',margin:'0 auto 16px' }}/><p style={{ margin:0,fontSize:14,color:'#93a4d4' }}>Loading...</p></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
 }
 
 function ExistingApplicationRoutes() {
-  return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/report/new" element={<ProtectedRoute><DirectorOnly><ReportForm /></DirectorOnly></ProtectedRoute>} />
-        <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
-        <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-        <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
-        <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
-        <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-        <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </AuthProvider>
-  )
+  return <AuthProvider><Routes>
+    <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+    <Route path="/report/new" element={<ProtectedRoute><DirectorOnly><ReportForm /></DirectorOnly></ProtectedRoute>} />
+    <Route path="/report/:id" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
+    <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+    <Route path="/reconciliation" element={<ProtectedRoute><ReconciliationPage /></ProtectedRoute>} />
+    <Route path="/admin/users" element={<ProtectedRoute><AdminOnly><AdminUsersPage /></AdminOnly></ProtectedRoute>} />
+    <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
+    <Route path="/proposals" element={<ProtectedRoute><ProgrammeProposalsPage /></ProtectedRoute>} />
+    <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+    <Route path="/eod-notes" element={<ProtectedRoute><EODNotesPage /></ProtectedRoute>} />
+    <Route path="/analytics" element={<ProtectedRoute><ReviewerOnly><AnalyticsPage /></ReviewerOnly></ProtectedRoute>} />
+    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+  </Routes></AuthProvider>
 }
 
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* Summit participant experience is intentionally independent of the existing application auth/Supabase client. */}
-        <Route path="/summit-2026/register" element={<SummitRegistration />} />
-        <Route path="/summit-2026" element={<Summit2026 />} />
-        <Route path="/summit-2026/control-room/login" element={<SummitCoordinatorLogin />} />
-        <Route path="/summit-2026/control-room" element={<SummitCoordinatorGate />} />
-        <Route path="*" element={<ExistingApplicationRoutes />} />
-      </Routes>
-    </BrowserRouter>
-  )
+  return <BrowserRouter><Routes>
+    <Route path="/summit-2026/register" element={<SummitRegistration />} />
+    <Route path="/summit-2026" element={<Summit2026 />} />
+    <Route path="/summit-2026/control-room/login" element={<SummitCoordinatorLogin />} />
+    <Route path="/summit-2026/control-room" element={<SummitCoordinatorGate />} />
+    <Route path="*" element={<ExistingApplicationRoutes />} />
+  </Routes></BrowserRouter>
 }
