@@ -11,12 +11,12 @@ export default function SummitRegistration() {
   const [backendMessage, setBackendMessage] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const summitUrl = useMemo(() => {
-    if (typeof window === 'undefined') return '/summit-2026'
-    return `${window.location.origin}/summit-2026`
+  const registrationUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '/summit-2026/register'
+    return `${window.location.origin}/summit-2026/register`
   }, [])
 
-  const qrUrl = useMemo(() => `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=${encodeURIComponent(summitUrl)}`, [summitUrl])
+  const qrUrl = useMemo(() => `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=${encodeURIComponent(registrationUrl)}`, [registrationUrl])
 
   const register = async (event) => {
     event.preventDefault()
@@ -79,9 +79,9 @@ export default function SummitRegistration() {
           </div>
 
           <aside style={{ textAlign: 'center', border: '1px solid #e1e7ef', borderRadius: 14, padding: 14, background: '#fafbfd' }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#526277', marginBottom: 8 }}>SUMMIT ACCESS QR</div>
-            <img src={qrUrl} alt="QR code for the Summit participant page" width="210" height="210" style={{ display: 'block', maxWidth: '100%', height: 'auto', margin: '0 auto', background: '#fff' }} />
-            <div style={{ marginTop: 10, fontSize: 10, lineHeight: 1.4, color: '#718096', wordBreak: 'break-all' }}>{summitUrl}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#526277', marginBottom: 8 }}>SUMMIT REGISTRATION QR</div>
+            <img src={qrUrl} alt="QR code for Summit participant registration" width="210" height="210" style={{ display: 'block', maxWidth: '100%', height: 'auto', margin: '0 auto', background: '#fff' }} />
+            <div style={{ marginTop: 10, fontSize: 10, lineHeight: 1.4, color: '#718096', wordBreak: 'break-all' }}>{registrationUrl}</div>
           </aside>
         </div>
 
