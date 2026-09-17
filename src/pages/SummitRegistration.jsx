@@ -53,7 +53,10 @@ export default function SummitRegistration() {
   return (
     <main style={{ minHeight: '100vh', background: '#f5f7fb', fontFamily: 'Inter,system-ui,sans-serif', padding: 'clamp(18px,5vw,48px) 14px' }}>
       <section style={{ maxWidth: 860, margin: '0 auto', background: '#fff', border: '1px solid #dce3ec', borderRadius: 18, padding: 'clamp(20px,4vw,32px)', boxShadow: '0 12px 40px rgba(23,59,104,.08)' }}>
-        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.12em', color: '#718096' }}>U.S. DIPLOMATIC MISSION NIGERIA • PUBLIC DIPLOMACY SECTION</div>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:16 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.12em', color: '#718096' }}>U.S. DIPLOMATIC MISSION NIGERIA • PUBLIC DIPLOMACY SECTION</div>
+          <a href="/summit-2026" style={{ display:'inline-flex', alignItems:'center', textDecoration:'none', border:'1px solid #d2dce8', borderRadius:8, padding:'8px 11px', color:'#173b68', background:'#f7f9fc', fontSize:11, fontWeight:800 }}>⌂ Summit Home</a>
+        </div>
         <h1 style={{ color: '#173b68', lineHeight: 1.1, marginBottom: 8 }}>Summit of American Spaces in Nigeria 2026</h1>
         <p style={{ color: '#526277', lineHeight: 1.55, marginTop: 0 }}>Participant access • September 21–23, 2026 • Black Diamond Suites, Victoria Island, Lagos</p>
 
