@@ -9,5 +9,87 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      (() => {
+        let summitPage = 1
+        let activeFrame = null
+
+        const isSummit = () => window.location.pathname.startsWith('/summit-2026')
+
+        const getSlideButtons = () => {
+          const bar = document.querySelector('.slidebar')
+          if (!bar) return { previous: null, next: null }
+          const buttons = [...bar.querySelectorAll('button')]
+          return { previous: buttons[0] || null, next: buttons[1] || null }
+        }
+
+        const getPdfFrame = () => document.querySelector('.pdf-frame')
+
+        const setPdfPage = (page) => {
+          const frame = getPdfFrame()
+          if (!frame) return
+          const base = frame.src.split('#')[0]
+          frame.src = `${base}#page=${Math.max(1, page)}`
+        }
+
+        const syncFrame = () => {
+          const frame = getPdfFrame()
+          if (!frame) {
+            activeFrame = null
+            summitPage = 1
+            return
+          }
+          if (frame !== activeFrame) {
+            activeFrame = frame
+            summitPage = 1
+          }
+        }
+
+        const advance = (direction) => {
+          if (!isSummit()) return
+          syncFrame()
+          const { previous, next } = getSlideButtons()
+          const button = direction > 0 ? next : previous
+          if (!button || button.disabled) return
+
+          summitPage = Math.max(1, summitPage + direction)
+          button.click()
+          window.setTimeout(() => setPdfPage(summitPage), 80)
+        }
+
+        window.addEventListener('keydown', (event) => {
+          if (!isSummit()) return
+          const target = event.target
+          if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return
+
+          if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+            event.preventDefault()
+            advance(1)
+          } else if (event.key === 'ArrowLeft' || event.key === 'PageUp' || event.key === 'Backspace') {
+            event.preventDefault()
+            advance(-1)
+          } else if (event.key === 'Home') {
+            event.preventDefault()
+            syncFrame()
+            summitPage = 1
+            const { previous } = getSlideButtons()
+            if (previous) {
+              while (summitPage > 1) {
+                previous.click()
+                summitPage -= 1
+              }
+            }
+            setPdfPage(1)
+          }
+        }, true)
+
+        const observer = new MutationObserver(() => {
+          if (!isSummit()) return
+          syncFrame()
+        })
+
+        observer.observe(document.documentElement, { childList: true, subtree: true })
+      })()
+    </script>
   </body>
 </html>
