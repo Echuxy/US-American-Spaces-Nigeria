@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/american-spaces-nigeria",
+      "destination": "/summit-2026",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
