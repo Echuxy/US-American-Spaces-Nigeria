@@ -1,0 +1,44 @@
+import { useEffect, useMemo, useState } from 'react'
+import { createSummitRealtime, summitEventTypes } from '../lib/summitRealtime'
+import { summitSupabase } from '../lib/summitSupabase'
+
+const FALLBACK = [
+  ['day1','09:00','Arrival, Registration and Hall Setup'],['day1','11:00','Setting the Stage'],['day1','13:00','Opening and Welcome Remarks (+ Photo Opportunity)'],['day1','14:00','Overview: The AI Revolution and U.S. Public Diplomacy Priorities'],['day1','15:00','Current use cases of AI by American Spaces in Nigeria'],['day1','15:30','Topic to be decided'],
+  ['day2','08:00','Ice Breaker'],['day2','08:05','Hands-On Session: AI-Assisted Program Planning'],['day2','09:15','AI Assisted Flyer and Graphic Designs'],['day2','13:00','AI for Audience Engagement and Presentation'],['day2','14:00','Use of Gemini NotebookLM'],['day2','15:00','Mapping ICS Goals to Achieving High Impacting American Spaces Programming'],['day2','16:00','Programming American Spaces using ICS Goals'],['day2','16:45','Parking Lot and Day 2 Wrap-Up'],
+  ['day3','08:00','Ice Breaker'],['day3','08:10','American Spaces Nigeria Strategic Plan: Review FY2026 and Plan FY2027'],['day3','09:10','Introduction to Vibe Coding'],['day3','10:25','Introduction to Vibe Coding continued'],['day3','13:00','Financial matters and Looking Ahead'],['day3','13:30','Practice Session'],['day3','14:40','Summit Evaluation'],['day3','15:40','Closing Ceremony, Certificate Presentation, and Group Photo'],['day3','16:30','Parking Lot and Day 3 Wrap-Up'],
+].map(([day,time,title],i)=>({id:`fallback-${i}`,day_id:day,sort_order:i+1,start_time:time,title,facilitator:''}))
+
+export default function SummitLiveScreen(){
+  const realtime=useMemo(()=>createSummitRealtime(),[])
+  const [sessions,setSessions]=useState(FALLBACK)
+  const [live,setLive]=useState({dayId:'day1',sessionIndex:1,slide:1})
+  const [resource,setResource]=useState(null)
+  const [announcement,setAnnouncement]=useState('')
+  const [poll,setPoll]=useState(null)
+  const [clock,setClock]=useState(new Date())
+
+  useEffect(()=>{ const id=setInterval(()=>setClock(new Date()),1000); return()=>clearInterval(id)},[])
+  useEffect(()=>{ let active=true; (async()=>{ if(!summitSupabase)return; const {data}=await summitSupabase.from('sessions').select('id,day_id,sort_order,start_time,title,facilitator,facilitator_bio,facilitator_headshot_url').order('day_id').order('sort_order'); if(active&&data?.length)setSessions(data) })(); return()=>{active=false; realtime.close()} },[realtime])
+  useEffect(()=>realtime.subscribe(event=>{
+    const {type,payload={}}=event
+    if(type===summitEventTypes.LIVE_STATE_CHANGED) setLive({dayId:payload.dayId,sessionIndex:Number(payload.sessionIndex),slide:Number(payload.slide||1)})
+    if(type===summitEventTypes.ANNOUNCEMENT) setAnnouncement(payload.text||'')
+    if(type===summitEventTypes.POLL_PUBLISHED) setPoll(payload)
+    if(type===summitEventTypes.POLL_CLOSED) setPoll(null)
+  }),[realtime])
+  useEffect(()=>{ if(!summitSupabase)return; (async()=>{ const {data}=await summitSupabase.from('summit_live_state').select('day_id,session_index,slide').eq('id',1).maybeSingle(); if(data)setLive({dayId:data.day_id,sessionIndex:Number(data.session_index),slide:Number(data.slide||1)}) })() },[])
+
+  const session=sessions.find(s=>s.day_id===live.dayId&&s.sort_order===live.sessionIndex)||sessions[0]
+  useEffect(()=>{ let active=true; (async()=>{ if(!summitSupabase||!session?.id||String(session.id).startsWith('fallback-')){setResource(null);return} const {data}=await summitSupabase.from('session_resources').select('title,resource_url,resource_type').eq('session_id',session.id).eq('resource_type','presentation_pdf').order('sort_order').limit(1).maybeSingle(); if(active)setResource(data||null) })(); return()=>{active=false} },[session?.id])
+  const dayLabel=live.dayId==='day1'?'DAY 1 · SEPTEMBER 21':live.dayId==='day2'?'DAY 2 · SEPTEMBER 22':'DAY 3 · SEPTEMBER 23'
+  const pdfSrc=resource?.resource_url ? `${resource.resource_url.split('#')[0]}#page=${live.slide}` : null
+
+  return <main className="live-screen"><style>{`
+  .live-screen{width:100vw;height:100vh;overflow:hidden;background:#050a12;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;position:relative}.live-top{position:absolute;z-index:4;top:0;left:0;right:0;padding:22px 34px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(2,7,14,.9),transparent)}.eyebrow{font-size:11px;letter-spacing:.16em;color:#9db2c9;font-weight:800}.live-brand{font-size:12px;font-weight:800;letter-spacing:.08em}.live-main{height:100%;display:flex;align-items:center;justify-content:center;padding:72px 34px 66px;box-sizing:border-box}.deck{width:min(94vw,1500px);height:min(78vh,820px);background:#0d1522;border:1px solid rgba(169,196,225,.16);border-radius:14px;overflow:hidden;box-shadow:0 35px 100px rgba(0,0,0,.55);position:relative}.deck iframe{width:100%;height:100%;border:0;background:#fff}.fallback-slide{height:100%;display:flex;flex-direction:column;justify-content:center;padding:8vw;box-sizing:border-box;background:radial-gradient(circle at 70% 35%,rgba(38,117,180,.25),transparent 45%),linear-gradient(135deg,#0a1422,#050a12)}.fallback-slide .number{font-size:13px;color:#78a9d1;letter-spacing:.16em;font-weight:800}.fallback-slide h1{font-size:clamp(36px,5vw,84px);line-height:.98;max-width:1100px;margin:18px 0}.facilitator{font-size:18px;color:#b9c8d9}.bottom{position:absolute;z-index:5;left:0;right:0;bottom:0;padding:14px 34px;display:flex;justify-content:space-between;gap:20px;align-items:center;background:linear-gradient(0deg,rgba(2,7,14,.95),transparent)}.session-title{font-size:14px;font-weight:800}.session-meta{font-size:10px;color:#91a5bb;margin-top:4px}.slide-count{font-size:11px;color:#9db2c9}.overlay{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:min(80vw,850px);padding:34px;background:rgba(5,11,20,.94);border:1px solid rgba(137,181,221,.3);border-radius:16px;text-align:center;box-shadow:0 30px 100px #000}.overlay .kicker{font-size:11px;letter-spacing:.15em;color:#8fb5d8;font-weight:800}.overlay h2{font-size:clamp(30px,4vw,58px);margin:10px 0;line-height:1.05}.announcement{position:absolute;z-index:9;left:50%;bottom:74px;transform:translateX(-50%);background:rgba(8,19,32,.95);border:1px solid rgba(133,174,211,.25);padding:12px 20px;border-radius:999px;font-size:13px;max-width:80vw;text-align:center}.poll{position:absolute;z-index:9;right:30px;bottom:72px;width:min(380px,38vw);padding:18px;background:rgba(8,18,30,.96);border:1px solid rgba(133,174,211,.25);border-radius:14px}.poll h3{font-size:15px;margin:0 0 10px}.poll-option{padding:7px 0;font-size:11px;color:#c4d1df;border-bottom:1px solid rgba(255,255,255,.08)}@media(max-width:700px){.live-top,.bottom{padding-left:15px;padding-right:15px}.deck{width:100vw;height:72vh;border-radius:0}.live-main{padding-left:0;padding-right:0}.poll{left:15px;right:15px;width:auto}.announcement{bottom:65px}.live-brand{display:none}}
+  `}</style>
+  <div className="live-top"><div><div className="eyebrow">U.S. DIPLOMATIC MISSION NIGERIA · PUBLIC DIPLOMACY SECTION</div><div className="live-brand">SUMMIT OF AMERICAN SPACES IN NIGERIA 2026</div></div><div className="eyebrow">{dayLabel} · {clock.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div></div>
+  <section className="live-main"><div className="deck">{pdfSrc?<iframe title="Summit live presentation" src={pdfSrc}/>:<div className="fallback-slide"><div className="number">LIVE PROGRAMME · SLIDE {live.slide}</div><h1>{session?.title||'Summit Programme'}</h1><div className="facilitator">{session?.facilitator||'Facilitator to be confirmed'}</div></div>}{poll&&<div className="overlay"><div className="kicker">LIVE POLL</div><h2>{poll.question}</h2><div style={{color:'#a9bbcd',fontSize:12}}>Please respond from your participant device.</div></div>}</div></section>
+  {announcement&&<div className="announcement">{announcement}</div>}
+  <div className="bottom"><div><div className="session-title">{session?.title}</div><div className="session-meta">{session?.start_time||''} · {session?.facilitator||'Facilitator to be confirmed'}</div></div><div className="slide-count">SLIDE {live.slide}</div></div>
+  </main>
+}
