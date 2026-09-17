@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { summitSupabase } from '../lib/summitSupabase'
 import SummitPresentationManager from './SummitPresentationManager'
 
@@ -13,6 +13,7 @@ function storagePath(url) {
 
 export default function SummitContentManager() {
   const [sessions, setSessions] = useState([])
+  const [resources, setResources] = useState([])
   const [selectedId, setSelectedId] = useState('')
   const [loading, setLoading] = useState(true)
   const [bio, setBio] = useState('')
@@ -24,17 +25,18 @@ export default function SummitContentManager() {
 
   const loadSessions = async () => {
     if (!summitSupabase) { setLoading(false); return }
-    const { data, error } = await summitSupabase
-      .from('sessions')
-      .select('id,day_id,sort_order,start_time,title,facilitator,facilitator_bio,facilitator_headshot_url')
-      .order('day_id')
-      .order('sort_order')
+    const [{ data, error }, { data: resourceData, error: resourceError }] = await Promise.all([
+      summitSupabase.from('sessions').select('id,day_id,sort_order,start_time,title,facilitator,facilitator_bio,facilitator_headshot_url').order('day_id').order('sort_order'),
+      summitSupabase.from('session_resources').select('id,session_id,title,resource_type,resource_url,sort_order').order('sort_order')
+    ])
     if (error) {
       setProfileError(error.message)
       setLoading(false)
       return
     }
+    if (resourceError) setProfileError(resourceError.message)
     setSessions(data || [])
+    setResources(resourceData || [])
     setSelectedId(current => current || data?.[0]?.id || '')
     setLoading(false)
   }
@@ -42,6 +44,10 @@ export default function SummitContentManager() {
   useEffect(() => { void loadSessions() }, [])
 
   const session = sessions.find(s => s.id === selectedId)
+  const sessionResources = useMemo(() => resources.filter(r => r.session_id === selectedId), [resources, selectedId])
+  const uploadedSessions = useMemo(() => {
+    return sessions.map(s => ({ ...s, resources: resources.filter(r => r.session_id === s.id) })).filter(s => s.resources.length > 0)
+  }, [sessions, resources])
 
   useEffect(() => {
     if (!session) return
@@ -50,6 +56,10 @@ export default function SummitContentManager() {
     setProfileMessage('')
     setProfileError('')
   }, [session?.id])
+
+  const refreshContent = async () => {
+    await loadSessions()
+  }
 
   const saveProfile = async () => {
     setProfileMessage('')
@@ -129,6 +139,23 @@ export default function SummitContentManager() {
         </select>
       </div>
 
+      <section style={{marginTop:15,background:'#fff',border:'2px solid #173b68',borderRadius:14,overflow:'hidden'}}>
+        <div style={{padding:'14px 16px',background:'#edf3f9',borderBottom:'1px solid #d6e0ea',display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+          <div>
+            <div style={{fontSize:10,letterSpacing:'.1em',fontWeight:800,color:'#173b68'}}>CURRENT UPLOADS</div>
+            <strong style={{fontSize:16,color:'#173b68'}}>Find, replace or remove uploaded presentations</strong>
+            <div style={{fontSize:11,color:'#5f7085',marginTop:3}}>Select a session above. Its uploaded files appear below with <strong>Open current file</strong>, <strong>Replace</strong> and <strong>Remove</strong> controls.</div>
+          </div>
+          <div style={{background:'#173b68',color:'#fff',borderRadius:999,padding:'7px 10px',fontSize:10,fontWeight:800}}>{resources.length} uploaded file{resources.length===1?'':'s'}</div>
+        </div>
+        <div style={{padding:'12px 16px',background:'#fffaf0',borderBottom:'1px solid #eadfca',fontSize:11,color:'#705d35'}}>
+          <strong>How to delete or replace:</strong> choose the session containing the file → scroll to <strong>ATTACHED RESOURCES</strong> → use <strong>Replace</strong> to upload the corrected file, or <strong>Remove</strong> to permanently detach it from the session.
+        </div>
+        {uploadedSessions.length > 0
+          ? <div style={{padding:12,display:'grid',gap:7}}>{uploadedSessions.map(s=><button key={s.id} onClick={()=>setSelectedId(s.id)} style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,textAlign:'left',width:'100%',border:'1px solid #dce4ed',background:s.id===selectedId?'#edf3f9':'#fff',borderRadius:9,padding:'9px 11px',cursor:'pointer'}}><span><strong style={{fontSize:11,color:'#173b68'}}>{s.day_id.toUpperCase()} · {s.start_time}</strong><span style={{display:'block',fontSize:11,color:'#24364d',marginTop:2}}>{s.title}</span></span><span style={{fontSize:10,fontWeight:800,color:'#173b68',whiteSpace:'nowrap'}}>{s.resources.length} file{s.resources.length===1?'':'s'} →</span></button>)}</div>
+          : <div style={{padding:14,fontSize:11,color:'#718096'}}>No uploaded presentations or resources are currently recorded in the Summit database.</div>}
+      </section>
+
       {session && <>
         <section style={{marginTop:15,background:'#fff',border:'1px solid #dce4ed',borderRadius:14,overflow:'hidden'}}>
           <div style={{padding:'13px 16px',borderBottom:'1px solid #e5eaf0'}}>
@@ -160,7 +187,8 @@ export default function SummitContentManager() {
           </div>
         </section>
 
-        <div style={{marginTop:15}}><SummitPresentationManager session={session}/></div>
+        <div style={{marginTop:15}}><SummitPresentationManager session={session} onResourceChange={refreshContent}/></div>
+        {sessionResources.length > 0 && <div style={{marginTop:8,padding:'8px 12px',fontSize:10,color:'#286333',background:'#edf7ee',border:'1px solid #cce4cf',borderRadius:8}}>This session currently has {sessionResources.length} uploaded file{sessionResources.length===1?'':'s'}. The controls above apply directly to these files.</div>}
       </>}
 
       <div style={{marginTop:15,padding:14,background:'#fff',border:'1px solid #dce4ed',borderRadius:14,fontSize:11,color:'#63748a',lineHeight:1.6}}><strong>Content workflow:</strong> select a session, update the approved facilitator bio/headshot, then manage the session presentation below. PDF files are the live presentation format; PPT/PPTX files are retained as downloadable source files.</div>
