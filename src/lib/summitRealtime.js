@@ -4,11 +4,6 @@ const STORAGE_KEY = 'summit2026-live-events'
 const MAX_EVENTS = 100
 const LIVE_STATE_ID = 1
 
-function makeId() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
-
 function readEvents() {
   if (typeof window === 'undefined') return []
   try {
@@ -41,8 +36,11 @@ export function createSummitRealtime() {
   let heartbeat = null
   let liveStatePoller = null
   let subscribed = false
+  let lastLiveState = null
   const listeners = new Set()
   const seenIds = new Set()
+
+  const persistLocal = message => rememberEvents([...readEvents(), message])
 
   const deliver = message => {
     if (!message?.id || seenIds.has(message.id)) return
@@ -55,12 +53,37 @@ export function createSummitRealtime() {
     listeners.forEach(listener => listener(message))
   }
 
-  const persistLocal = message => rememberEvents([...readEvents(), message])
-
   const emitLiveState = row => {
     if (!row) return
-    const base = { dayId: row.day_id, sessionIndex: Number(row.session_index), slide: Number(row.slide || 1), updatedAt: row.updated_at }
-    deliver({ id: `live-state-${row.updated_at}`, type: summitEventTypes.LIVE_STATE_CHANGED, payload: base, at: row.updated_at })
+    const state = {
+      dayId: row.day_id,
+      sessionIndex: Number(row.session_index),
+      slide: Number(row.slide || 1),
+      updatedAt: row.updated_at,
+    }
+    const previous = lastLiveState
+    lastLiveState = state
+
+    deliver({ id: `live-state-${row.updated_at}`, type: summitEventTypes.LIVE_STATE_CHANGED, payload: state, at: row.updated_at })
+
+    // Preserve the legacy event contract used by the existing Summit participant
+    // and coordinator views while the database row remains the single source of truth.
+    if (!previous || previous.dayId !== state.dayId || previous.sessionIndex !== state.sessionIndex) {
+      deliver({
+        id: `session-${row.updated_at}`,
+        type: summitEventTypes.SESSION_CHANGED,
+        payload: { dayId: state.dayId, sessionIndex: state.sessionIndex },
+        at: row.updated_at,
+      })
+    }
+    if (!previous || previous.slide !== state.slide || previous.dayId !== state.dayId || previous.sessionIndex !== state.sessionIndex) {
+      deliver({
+        id: `slide-${row.updated_at}`,
+        type: summitEventTypes.SLIDE_CHANGED,
+        payload: { dayId: state.dayId, sessionIndex: state.sessionIndex, slide: state.slide },
+        at: row.updated_at,
+      })
+    }
   }
 
   const loadBootstrap = async () => {
@@ -106,7 +129,8 @@ export function createSummitRealtime() {
           p_slide: 1,
         })
       } else if (type === summitEventTypes.SLIDE_CHANGED) {
-        const { data: current } = await summitSupabase.from('summit_live_state').select('day_id,session_index').eq('id', LIVE_STATE_ID).maybeSingle()
+        const { data: current, error: currentError } = await summitSupabase.from('summit_live_state').select('day_id,session_index').eq('id', LIVE_STATE_ID).maybeSingle()
+        if (currentError) return { error: currentError }
         result = await summitSupabase.rpc('summit_coordinator_set_live_state', {
           p_day_id: current?.day_id,
           p_session_index: Number(current?.session_index),
@@ -122,7 +146,7 @@ export function createSummitRealtime() {
           p_options: payload.options || [],
         })
       } else if (type === summitEventTypes.POLL_CLOSED) {
-        result = await summitSupabase.rpc('summit_coordinator_close_poll', { p_poll_id: payload.pollId || payload.id })
+        result = await summitSupabase.rpc('summit_coordinator_close_poll', { p_poll_id: payload.pollId || payload.id || null })
       } else if (type === summitEventTypes.PARKING_MODERATION) {
         result = await summitSupabase.rpc('summit_coordinator_moderate_parking', {
           p_post_id: payload.id,
@@ -204,7 +228,7 @@ export function createSummitRealtime() {
         schema: 'public',
         table: 'poll_responses',
       }, payload => {
-        // Only the authenticated coordinator is allowed to read poll responses by RLS.
+        // RLS exposes poll responses only to the authenticated coordinator.
         deliver({ id: `poll-response-${payload.new.id}`, type: summitEventTypes.POLL_RESPONSE, payload: { pollId: payload.new.poll_id, option: payload.new.option, responseId: payload.new.id }, at: payload.new.created_at })
       })
       .subscribe((status, error) => {
@@ -221,11 +245,6 @@ export function createSummitRealtime() {
     }, 5000)
 
     void loadBootstrap()
-    void summitSupabase.auth.getSession().then(({ data }) => {
-      if (!data.session?.user) return
-      // Re-subscription is handled by the same channel; RLS permits poll-response reads only to the coordinator.
-      if (data.session.user.email?.toLowerCase() === 'amcenterlagosinfo@gmail.com') void touchParticipant()
-    })
   }
 
   const subscribe = listener => {
