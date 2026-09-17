@@ -42,6 +42,10 @@
           if (frame !== activeFrame) {
             activeFrame = frame
             summitPage = 1
+            // Keep keyboard focus on the Summit page so a physical clicker
+            // always controls the Summit navigation instead of the PDF iframe.
+            frame.tabIndex = -1
+            frame.style.pointerEvents = 'none'
           }
         }
 
@@ -71,13 +75,11 @@
           } else if (event.key === 'Home') {
             event.preventDefault()
             syncFrame()
-            summitPage = 1
             const { previous } = getSlideButtons()
-            if (previous) {
-              while (summitPage > 1) {
-                previous.click()
-                summitPage -= 1
-              }
+            while (summitPage > 1) {
+              if (!previous) break
+              previous.click()
+              summitPage -= 1
             }
             setPdfPage(1)
           }
