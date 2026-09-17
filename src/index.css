@@ -109,3 +109,190 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Summit 2026 — richer, mature cinematic palette */
+.summit-shell {
+  --summit-ink: #05080d;
+  --summit-midnight: #07111f;
+  --summit-navy: #0a1b31;
+  --summit-sapphire: #103a66;
+  --summit-blue: #2f7fc4;
+  --summit-ice: #b8d7f2;
+  --summit-white: #f7f5ef;
+  --summit-gold: #d9b45c;
+  --summit-gold-bright: #f1cf78;
+  --summit-champagne: #f4dfad;
+  --summit-green: #6fc39a;
+  --summit-burgundy: #5b2631;
+  background:
+    radial-gradient(circle at 82% 2%, rgba(38, 104, 168, .20), transparent 25%),
+    radial-gradient(circle at 12% 72%, rgba(91, 38, 49, .10), transparent 24%),
+    linear-gradient(145deg, #03070d 0%, #07111f 42%, #0a1b31 72%, #04070d 100%) !important;
+  color: var(--summit-white) !important;
+}
+
+.summit-shell:before {
+  background:
+    radial-gradient(circle at 74% 10%, rgba(217, 180, 92, .075), transparent 18%),
+    linear-gradient(115deg, rgba(255,255,255,.018) 1px, transparent 1px) !important;
+  background-size: auto, 84px 84px !important;
+  opacity: .32 !important;
+}
+
+.summit-shell .hero {
+  background:
+    radial-gradient(circle at 78% 30%, rgba(47,127,196,.26), transparent 24%),
+    radial-gradient(circle at 91% 76%, rgba(217,180,92,.10), transparent 20%),
+    linear-gradient(125deg, #03070d 0%, #071321 43%, #0b2440 74%, #06101c 100%) !important;
+  border-bottom-color: rgba(217,180,92,.25) !important;
+}
+
+.summit-shell .hero:after {
+  background:
+    radial-gradient(circle at 76% 36%, rgba(70,151,220,.16), transparent 23%),
+    radial-gradient(circle at 92% 70%, rgba(217,180,92,.12), transparent 28%) !important;
+}
+
+.summit-shell .eyebrow,
+.summit-shell .panel-head,
+.summit-shell .day span,
+.summit-shell .bio,
+.summit-shell .cinema-placeholder p {
+  color: #a9bfd4 !important;
+}
+
+.summit-shell .hero h1,
+.summit-shell .session h2,
+.summit-shell .cinema-placeholder h3 {
+  color: var(--summit-white) !important;
+  text-shadow: 0 8px 35px rgba(0,0,0,.38);
+}
+
+.summit-shell .hero h1::first-line {
+  text-shadow: 0 0 34px rgba(47,127,196,.12);
+}
+
+.summit-shell .hero-theme,
+.summit-shell .session-sub {
+  color: #d5e1ec !important;
+}
+
+.summit-shell .hero-meta span {
+  color: #d9e5ef !important;
+  border-color: rgba(217,180,92,.25) !important;
+  background: rgba(8,20,34,.56) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 8px 30px rgba(0,0,0,.14);
+}
+
+.summit-shell .day {
+  color: #dce8f2 !important;
+  background: linear-gradient(145deg, rgba(14,31,50,.86), rgba(7,16,28,.86)) !important;
+  border-color: rgba(154,184,211,.17) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 34px rgba(0,0,0,.16);
+}
+
+.summit-shell .day:hover,
+.summit-shell .day.active {
+  background: linear-gradient(135deg, #f0d28a, #d4aa4d) !important;
+  color: #07111f !important;
+  border-color: #f1cf78 !important;
+  box-shadow: 0 8px 30px rgba(217,180,92,.20), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+.summit-shell .panel {
+  background: linear-gradient(145deg, rgba(10,23,39,.91), rgba(4,10,18,.91)) !important;
+  border-color: rgba(146,177,204,.15) !important;
+  box-shadow: 0 28px 90px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+.summit-shell .panel-head,
+.summit-shell .presentation-head {
+  background: linear-gradient(90deg, rgba(15,34,55,.86), rgba(8,17,29,.86)) !important;
+  border-bottom-color: rgba(217,180,92,.14) !important;
+}
+
+.summit-shell .session {
+  background:
+    radial-gradient(circle at 80% 15%, rgba(47,127,196,.08), transparent 24%),
+    transparent !important;
+}
+
+.summit-shell .live-label {
+  color: var(--summit-gold-bright) !important;
+}
+
+.summit-shell .live-label i {
+  background: var(--summit-gold-bright) !important;
+  box-shadow: 0 0 13px rgba(241,207,120,.72) !important;
+}
+
+.summit-shell .live-dot i {
+  background: var(--summit-green) !important;
+  box-shadow: 0 0 14px rgba(111,195,154,.62) !important;
+}
+
+.summit-shell .portrait {
+  background: linear-gradient(145deg, #173b61, #091321) !important;
+  border-color: rgba(217,180,92,.34) !important;
+  box-shadow: 0 0 0 4px rgba(217,180,92,.045), 0 15px 38px rgba(0,0,0,.34);
+}
+
+.summit-shell .presentation {
+  border-color: rgba(217,180,92,.20) !important;
+  box-shadow: 0 24px 65px rgba(0,0,0,.38);
+}
+
+.summit-shell .cinema-placeholder {
+  background:
+    radial-gradient(circle at 72% 30%, rgba(47,127,196,.24), transparent 28%),
+    radial-gradient(circle at 18% 82%, rgba(217,180,92,.09), transparent 24%),
+    linear-gradient(135deg, #08192b, #03070d) !important;
+}
+
+.summit-shell .cinema-placeholder small {
+  color: var(--summit-gold-bright) !important;
+}
+
+.summit-shell .btn {
+  color: #e7edf3 !important;
+  background: linear-gradient(145deg, rgba(19,43,68,.92), rgba(7,16,27,.92)) !important;
+  border-color: rgba(146,177,204,.20) !important;
+}
+
+.summit-shell .btn:hover {
+  color: #07111f !important;
+  background: linear-gradient(135deg, #f0d28a, #d4aa4d) !important;
+  border-color: #f1cf78 !important;
+  box-shadow: 0 8px 28px rgba(217,180,92,.18);
+}
+
+.summit-shell input,
+.summit-shell textarea,
+.summit-shell select {
+  color: #f4f6f8 !important;
+  background: rgba(3,9,16,.72) !important;
+  border-color: rgba(146,177,204,.20) !important;
+}
+
+.summit-shell input:focus,
+.summit-shell textarea:focus,
+.summit-shell select:focus {
+  border-color: rgba(241,207,120,.68) !important;
+  box-shadow: 0 0 0 3px rgba(217,180,92,.09) !important;
+  outline: none;
+}
+
+.summit-shell ::selection {
+  color: #07111f;
+  background: #f1cf78;
+}
+
+@media (max-width: 760px) {
+  .summit-shell .hero {
+    min-height: 330px;
+  }
+
+  .summit-shell .hero h1 {
+    font-size: clamp(38px, 13vw, 64px);
+  }
+}
