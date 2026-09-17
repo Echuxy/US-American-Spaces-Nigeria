@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { useEffect, useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { summitSupabase } from './lib/summitSupabase'
+import './summit-cinematic.css'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Summit2026 from './pages/Summit2026'
