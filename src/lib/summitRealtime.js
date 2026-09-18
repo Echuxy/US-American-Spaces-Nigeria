@@ -248,7 +248,7 @@ export function createSummitRealtime() {
     heartbeat = window.setInterval(touchParticipant, 2 * 60 * 1000)
     liveStatePoller = window.setInterval(async () => {
       if (closed) return
-      const { data, error } = await summitSupabase.from('summit_live_state').select('id,day_id,session_index,slide,updated_at').eq('id', LIVE_STATE_ID).maybeSingle()
+      const { data, error } = await summitSupabase.from('summit_live_state').select('id,day_id,session_index,slide,display_mode,emergency_message,on_air,updated_at').eq('id', LIVE_STATE_ID).maybeSingle()
       if (!error && data) emitLiveState(data)
     }, 5000)
 
