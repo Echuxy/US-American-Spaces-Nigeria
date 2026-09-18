@@ -59,6 +59,9 @@ export function createSummitRealtime() {
       dayId: row.day_id,
       sessionIndex: Number(row.session_index),
       slide: Number(row.slide || 1),
+      displayMode: row.display_mode || 'program',
+      emergencyMessage: row.emergency_message || '',
+      onAir: row.on_air !== false,
       updatedAt: row.updated_at,
     }
     const previous = lastLiveState
@@ -89,7 +92,7 @@ export function createSummitRealtime() {
   const loadBootstrap = async () => {
     if (!summitSupabase || closed) return
     const [stateResult, parkingResult, pollResult, announcementResult] = await Promise.all([
-      summitSupabase.from('summit_live_state').select('id,day_id,session_index,slide,updated_at').eq('id', LIVE_STATE_ID).maybeSingle(),
+      summitSupabase.from('summit_live_state').select('id,day_id,session_index,slide,display_mode,emergency_message,on_air,updated_at').eq('id', LIVE_STATE_ID).maybeSingle(),
       summitSupabase.from('parking_lot_posts').select('id,day_id,text,display_name,anonymous,votes,visible,pinned,created_at').eq('visible', true).order('created_at', { ascending: true }).limit(500),
       summitSupabase.from('polls').select('id,day_id,session_id,question,options,created_at').eq('status', 'open').order('created_at', { ascending: false }).limit(1),
       summitSupabase.from('announcements').select('id,text,created_at').order('created_at', { ascending: false }).limit(5),
@@ -135,6 +138,11 @@ export function createSummitRealtime() {
           p_day_id: current?.day_id,
           p_session_index: Number(current?.session_index),
           p_slide: Math.max(1, Number(payload.slide) || 1),
+        })
+      } else if (type === summitEventTypes.DISPLAY_MODE_CHANGED) {
+        result = await summitSupabase.rpc('summit_coordinator_set_display_mode', {
+          p_mode: payload.mode,
+          p_message: payload.message || null,
         })
       } else if (type === summitEventTypes.ANNOUNCEMENT) {
         result = await summitSupabase.rpc('summit_coordinator_publish_announcement', { p_text: payload.text })
@@ -274,6 +282,7 @@ export const summitEventTypes = {
   POLL_PUBLISHED: 'poll_published',
   POLL_RESPONSE: 'poll_response',
   POLL_CLOSED: 'poll_closed',
+  DISPLAY_MODE_CHANGED: 'display_mode_changed',
   PARKING_POST: 'parking_post',
   PARKING_MODERATION: 'parking_moderation',
 }
