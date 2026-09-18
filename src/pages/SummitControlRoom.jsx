@@ -25,6 +25,9 @@ export default function SummitControlRoom() {
   const [pollResponses,setPollResponses] = useState({})
   const [parking,setParking] = useState([])
   const [moderationMode,setModerationMode] = useState(true)
+  const [pulse,setPulse] = useState({participants:0,active:0,attendance:0})
+  const [liveMode,setLiveMode] = useState('program')
+  const [liveMessage,setLiveMessage] = useState('')
 
   const session = sessions[selected] || null
   const currentDayId = session?.day_id || 'day1'
