@@ -88,3 +88,86 @@
  .sx2-sessions b{font-size:13px}.sx2-sessions small{font-size:9px}
  .sx2-final h2{font-size:clamp(48px,13vw,76px)}
 }
+
+
+/* FINAL HERO SCALE FIX — September 2026 */
+.sx2-hero{
+  min-height:720px;
+  height:auto;
+  padding:170px clamp(22px,7vw,110px) 120px;
+  align-items:center;
+}
+.sx2-hero-content{
+  width:min(760px,100%);
+  max-width:760px;
+}
+.sx2-overline{
+  width:100%;
+  max-width:760px;
+  margin-bottom:8px;
+  align-items:flex-start;
+}
+.sx2-overline .pulse{
+  margin-top:8px;
+}
+.sx2 .summit-title{
+  display:block;
+  width:auto;
+  max-width:700px;
+  overflow:visible;
+  font-family:'Montserrat',ui-sans-serif,system-ui,sans-serif;
+  font-size:clamp(16px,1.8vw,28px) !important;
+  line-height:1.08;
+  letter-spacing:.015em;
+  white-space:normal;
+  transform:skewX(-2deg);
+}
+.sx2 .summit-title b{
+  font-size:1em;
+  margin-left:5px;
+}
+.sx2-hero h1{
+  font-size:clamp(52px,6.4vw,96px) !important;
+  line-height:.9;
+  letter-spacing:-.055em;
+  margin:24px 0 22px;
+  max-width:760px;
+}
+.sx2-hero-content p{
+  font-size:15px !important;
+  line-height:1.6;
+  max-width:620px;
+}
+.sx2-actions{
+  margin-top:24px;
+}
+@media(max-width:900px){
+  .sx2-hero{
+    min-height:680px;
+    padding:145px 28px 110px;
+  }
+  .sx2-hero h1{
+    font-size:clamp(48px,9vw,78px) !important;
+  }
+  .sx2 .summit-title{
+    font-size:clamp(15px,2.8vw,22px) !important;
+  }
+}
+@media(max-width:700px){
+  .sx2-hero{
+    min-height:650px;
+    padding:115px 20px 110px;
+  }
+  .sx2-hero h1{
+    font-size:clamp(44px,13vw,70px) !important;
+    line-height:.92;
+    margin:18px 0 20px;
+  }
+  .sx2 .summit-title{
+    font-size:clamp(14px,4.2vw,20px) !important;
+    line-height:1.08;
+  }
+  .sx2-hero-content p{
+    font-size:14px !important;
+  }
+}
