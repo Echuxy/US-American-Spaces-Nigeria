@@ -1,7 +1,7 @@
 import '../summit-brand-marks.css'
 
 const LOGOS = {
-  mission: 'https://pbs.twimg.com/media/HAdgVEZWwAA1d71.jpg',
+  mission: '/summit-us-mission-flag.svg',
   spaces: 'https://norteamericano.cl/img/americanspaces.png',
   freedom250: 'https://freedom250.org/logo-color.png',
 }
