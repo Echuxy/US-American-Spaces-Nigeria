@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../summit-landing.css'
+import SummitBrandMarks from '../components/SummitBrandMarks'
 
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=2200&q=88'
 const AI_IMAGE = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=88'
@@ -64,7 +65,7 @@ export default function SummitLanding(){
   const navigate=useNavigate(), status=useMemo(getStatus,[]), day=days[status.day]||days[0], featured=status.current||status.next||day.sessions[0]
   return <div className="sx2">
     <header className="sx2-nav">
-      <button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><span className="sx2-mark"><i/><i/><i/></span><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button>
+      <div className="sx2-header-left"><button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><span className="sx2-mark"><i/><i/><i/></span><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button><SummitBrandMarks compact light /></div>
       <nav><button onClick={()=>document.getElementById('sx2-about')?.scrollIntoView({behavior:'smooth'})}>About</button><button onClick={()=>document.getElementById('sx2-programme')?.scrollIntoView({behavior:'smooth'})}>Programme</button><button onClick={()=>document.getElementById('sx2-groups')?.scrollIntoView({behavior:'smooth'})}>Groups</button><button onClick={()=>navigate('/summit-2026/live')}>Live</button></nav>
       <button className="sx2-nav-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button>
     </header>
