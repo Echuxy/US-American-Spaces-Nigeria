@@ -2,40 +2,38 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../summit-landing.css'
 
-const LAGOS_IMAGE = 'https://commons.wikimedia.org/wiki/Special:FilePath/Sunset%2C%20Third%20Mainland%20Bridge%2C%20Lagos%2C%20Nigeria.jpg'
-const ABUJA_IMAGE = 'https://commons.wikimedia.org/wiki/Special:FilePath/National%20Assembly%20Complex%2C%20Abuja.jpg'
-const PEOPLE_IMAGE = 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1400&q=85'
-const AI_IMAGE = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=85'
-const WOMAN_IMAGE = 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=85'
+const HERO_IMAGE = 'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=2200&q=88'
+const AI_IMAGE = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=88'
+const PEOPLE_IMAGE = 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1600&q=88'
 
 const days = [
-  { id:'day1', label:'DAY 1', date:'Mon, 21 Sept', sessions:[
+  { id:'day1', label:'01', date:'21 SEPTEMBER', title:'FOUNDATIONS', sessions:[
     ['09:00','Arrival, Registration and Hall Setup',''],
     ['11:00','Setting the Stage','Specialists'],
     ['13:00','Opening and Welcome Remarks (+ Photo Opportunity)','CG Lagos'],
-    ['14:00','Overview: The AI Revolution and U.S. Public Diplomacy Priorities','Julia McKay'],
-    ['14:30','Review of American Spaces: Reach, Challenges, Opportunities to advance U.S. foreign policy priorities.','Specialists / Directors'],
+    ['14:00','The AI Revolution and U.S. Public Diplomacy Priorities','Julia McKay'],
+    ['14:30','Review of American Spaces: Reach, Challenges and Opportunities','Specialists / Directors'],
     ['15:00','Current use cases of AI by American Spaces in Nigeria','All Directors'],
     ['15:30','Topic to be decided','Des Williamson'],
     ['16:30','Wrap-Up and Closing',''],
   ]},
-  { id:'day2', label:'DAY 2', date:'Tue, 22 Sept', sessions:[
+  { id:'day2', label:'02', date:'22 SEPTEMBER', title:'BUILD', sessions:[
     ['08:00','Ice Breaker','Josephine'],
-    ['08:05','Hands-On Session: AI-Assisted Program Planning','Dr. Aondoana Orlu'],
-    ['09:15','Hands-On Session: AI Assisted Flyer and Graphic Designs','Samuel Eyitayo'],
-    ['11:15','Hands-On Session: AI Flyer and Graphic Design','All Directors'],
-    ['13:00','Hands-On Session: AI for Audience Engagement and Presentation','Samuel Edeh and Grace Lamon'],
-    ['14:00','Hands-On Session: Use of Gemini NotebookLM','Hannah Fitter, (REPS, Accra)'],
-    ['15:00','Mapping ICS Goals to Achieving High Impacting American Spaces Programming','Julia McKay and Bill Couch'],
-    ['16:00','Hands-On Session: Programming American Spaces using ICS Goals','All Directors'],
+    ['08:05','AI-Assisted Program Planning','Dr. Aondoana Orlu'],
+    ['09:15','AI Assisted Flyer and Graphic Designs','Samuel Eyitayo'],
+    ['11:15','AI Flyer and Graphic Design','All Directors'],
+    ['13:00','AI for Audience Engagement and Presentation','Samuel Edeh and Grace Lamon'],
+    ['14:00','Use of Gemini NotebookLM','Hannah Fitter, (REPS, Accra)'],
+    ['15:00','Mapping ICS Goals to High-Impact Programming','Julia McKay and Bill Couch'],
+    ['16:00','Programming American Spaces using ICS Goals','All Directors'],
     ['16:45','Parking Lot and Day 2 Wrap-Up','Samuel Eyitayo'],
-    ['18:00','Networking Event – Casual Wear: Trivia Night at the hotel (Popcorn + Soda)','All Participants'],
+    ['18:00','Networking Event – Trivia Night','All Participants'],
   ]},
-  { id:'day3', label:'DAY 3', date:'Wed, 23 Sept', sessions:[
+  { id:'day3', label:'03', date:'23 SEPTEMBER', title:'ACTIVATE', sessions:[
     ['08:00','Ice Breaker','Josephine'],
     ['08:10','American Spaces Nigeria Strategic Plan: Review FY2026 and Plan FY2027','Bill Couch'],
-    ['09:10','Hands On Session: Introduction to Vibe Coding','Elijah Moses-Iyajini (YALI)'],
-    ['10:25','Hands On Session: Introduction to Vibe Coding continued','Elijah Moses-Iyajini (YALI)'],
+    ['09:10','Introduction to Vibe Coding','Elijah Moses-Iyajini (YALI)'],
+    ['10:25','Introduction to Vibe Coding continued','Elijah Moses-Iyajini (YALI)'],
     ['13:00','Financial matters and Looking Ahead','Julia McKay'],
     ['13:30','Practice Session','All Directors'],
     ['14:40','Summit Evaluation','All Directors'],
@@ -45,117 +43,45 @@ const days = [
   ]},
 ]
 
-function parseTime(value){ const [h,m] = value.split(':').map(Number); return h * 60 + m }
-function getSummitStatus(){
-  const now = new Date()
-  const start = new Date('2026-09-21T00:00:00+01:00')
-  const end = new Date('2026-09-24T00:00:00+01:00')
-  if(now < start) return { mode:'preview', label:'SUMMIT PREVIEW' }
-  if(now >= end) return { mode:'complete', label:'SUMMIT COMPLETE' }
-  const dayIndex = Math.min(2, Math.max(0, Math.floor((now - start) / 86400000)))
-  const minutes = now.getHours() * 60 + now.getMinutes()
-  const day = days[dayIndex]
-  let current = null
-  let next = null
-  day.sessions.forEach((session, index) => {
-    const startMin = parseTime(session[0])
-    const nextMin = day.sessions[index + 1] ? parseTime(day.sessions[index + 1][0]) : 24 * 60
-    if(minutes >= startMin && minutes < nextMin) current = session
-    if(!next && minutes < startMin) next = session
-  })
-  return { mode:'live', label: current ? 'LIVE NOW' : 'UP NEXT', current, next, dayIndex }
+const groupRotation = {
+  '21 SEPTEMBER': [['1','Lagos (AmCenter) · Abuja · Kano · Enugu · Osogbo'],['2','Calabar · Ikeja · Ibadan · Keffi · Yola'],['3','Bauchi · Maiduguri · OgunTechHub · Katsina · Abeokuta'],['4','Abuja (AmCenter) · Benin City · Zaria · Lekki'],['5','Minna · Jos · Uyo · Gombe · UNILAG'],['6','Sokoto · Awka · Markurdi · Port Harcourt · Dutse']],
+  '22 SEPTEMBER': [['1','Calabar · Katsina · Sokoto · Gombe · Port Harcourt'],['2','Lagos (AmCenter) · Maiduguri · Lekki · Minna · Dutse'],['3','Abuja · Ikeja · Benin City · Markurdi · UNILAG'],['4','OgunTechHub · Jos · Uyo · Bauchi'],['5','Enugu · Keffi · Zaria · Ibadan · Awka'],['6','Kano · Osogbo · Yola · Abeokuta · Abuja (AmCenter)']],
+  '23 SEPTEMBER': [['1','Maiduguri · Zaria · Lekki · Port Harcourt · Ibadan'],['2','Abuja (AmCenter) · Osogbo · Bauchi · Katsina · Abeokuta'],['3','Enugu · Calabar · Yola · Minna · Dutse'],['4','Lagos (AmCenter) · Keffi · Sokoto · UNILAG'],['5','Markurdi · Ikeja · OgunTechHub · Awka · Uyo'],['6','Kano · Abuja · Benin City · Jos · Gombe']],
+}
+
+function parseTime(value){ const [h,m]=value.split(':').map(Number); return h*60+m }
+function getStatus(){
+  const now=new Date(), start=new Date('2026-09-21T00:00:00+01:00'), end=new Date('2026-09-24T00:00:00+01:00')
+  if(now<start) return {mode:'preview',day:0,label:'SUMMIT PREVIEW'}
+  if(now>=end) return {mode:'complete',day:2,label:'SUMMIT COMPLETE'}
+  const day=Math.min(2,Math.max(0,Math.floor((now-start)/86400000))), minutes=now.getHours()*60+now.getMinutes()
+  let current=null,next=null
+  days[day].sessions.forEach((s,i)=>{const a=parseTime(s[0]),b=days[day].sessions[i+1]?parseTime(days[day].sessions[i+1][0]):1440;if(minutes>=a&&minutes<b)current=s;if(!next&&minutes<a)next=s})
+  return {mode:'live',day,label:current?'LIVE NOW':'UP NEXT',current,next}
 }
 
 export default function SummitLanding(){
-  const navigate = useNavigate()
-  const status = useMemo(getSummitStatus, [])
-  const previewSession = days[0].sessions.find(s => s[1].toLowerCase().includes('setting the stage')) || days[0].sessions[0]
-  const liveSession = status.current || status.next || previewSession
-  const liveFacilitator = liveSession?.[2] || 'Summit Programme'
-
-  const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' })
-  const enterSummit = () => navigate('/summit-2026/register')
-  const openLive = () => navigate('/summit-2026/live')
-
-  return <div className="sx">
-    <header className="sx-nav">
-      <button className="sx-brand" onClick={() => window.scrollTo({top:0, behavior:'smooth'})} aria-label="Summit home">
-        <span className="sx-flag" aria-hidden="true"><i /></span>
-        <span><b>U.S. MISSION NIGERIA</b><small>PUBLIC DIPLOMACY SECTION</small><em>People&nbsp; | &nbsp;Partnerships&nbsp; | &nbsp;Possibilities</em></span>
-      </button>
-      <nav>
-        <button className="active" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>Home</button>
-        <button onClick={() => scrollTo('about')}>About</button>
-        <button onClick={() => scrollTo('programme')}>Programme</button>
-        <button onClick={() => scrollTo('speakers')}>Speakers</button>
-        <button onClick={openLive}>Live</button>
-        <button onClick={() => scrollTo('resources')}>Resources</button>
-        <button onClick={() => scrollTo('contact')}>Contact</button>
-      </nav>
-      <div className="sx-motto"><span>ENGAGE</span><span>EDUCATE</span><span>EMPOWER</span><i /></div>
+  const navigate=useNavigate(), status=useMemo(getStatus,[]), day=days[status.day]||days[0], featured=status.current||status.next||day.sessions[0]
+  return <div className="sx2">
+    <header className="sx2-nav">
+      <button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><span className="sx2-mark"><i/><i/><i/></span><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button>
+      <nav><button onClick={()=>document.getElementById('sx2-about')?.scrollIntoView({behavior:'smooth'})}>About</button><button onClick={()=>document.getElementById('sx2-programme')?.scrollIntoView({behavior:'smooth'})}>Programme</button><button onClick={()=>document.getElementById('sx2-groups')?.scrollIntoView({behavior:'smooth'})}>Groups</button><button onClick={()=>navigate('/summit-2026/live')}>Live</button></nav>
+      <button className="sx2-nav-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button>
     </header>
-
     <main>
-      <section className="sx-hero" id="about">
-        <div className="sx-city sx-lagos"><b>LAGOS</b><span>A CITY OF<br/>OPPORTUNITY</span></div>
-        <div className="sx-city sx-abuja"><b>ABUJA</b><span>THE SEAT OF A<br/>BRIGHTER TOMORROW</span></div>
-        <div className="sx-hero-image sx-image-lagos" />
-        <div className="sx-hero-image sx-image-abuja" />
-        <div className="sx-hero-vignette" />
-        <div className="sx-hero-grid" />
-        <div className="sx-hero-copy">
-          <div className="sx-kicker">SUMMIT OF</div>
-          <h1>AMERICAN SPACES<br/><span>NIGERIA <em>2026</em></span></h1>
-          <div className="sx-rule" />
-          <h2>BUILT ON AMERICAN AI</h2>
-          <p>Equipping American Spaces Nigeria to Showcase<br className="desktop"/> the U.S. AI Stack.</p>
-          <div className="sx-meta"><span>▣ &nbsp; 21 – 23 SEPTEMBER 2026</span><span>⌖ &nbsp; LAGOS, NIGERIA</span></div>
-          <button className="sx-primary" onClick={enterSummit}>ENTER SUMMIT <b>→</b></button>
-        </div>
-        <div className="sx-hero-bottom"><span>Vibrant People. Dynamic Cities.<br/><i>A Stronger, More Connected Nigeria.</i></span><span><i>“Investing in people is the most powerful way<br/>to shape a more prosperous future.”</i><b>— U.S. DEPARTMENT OF STATE</b></span></div>
+      <section className="sx2-hero">
+        <div className="sx2-hero-image"/><div className="sx2-hero-glow"/><div className="sx2-grid"/>
+        <div className="sx2-hero-content"><div className="sx2-overline"><span className="pulse"/> SUMMIT OF AMERICAN SPACES IN NIGERIA <b>2026</b></div><h1>BUILT<br/><em>ON AMERICAN AI.</em></h1><p>Equipping American Spaces Nigeria to showcase the U.S. AI Stack through people, programming, creativity and practical innovation.</p><div className="sx2-actions"><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>JOIN THE SUMMIT <span>→</span></button><button className="sx2-ghost-cta" onClick={()=>navigate('/summit-2026/live')}><span className="play">▶</span> ENTER LIVE SCREEN</button></div></div>
+        <div className="sx2-hero-index"><span>01</span><i/><span>03</span></div>
+        <div className="sx2-hero-bottom"><div><span>21—23</span><small>SEPTEMBER 2026</small></div><div><span>BLACK DIAMOND SUITES</span><small>VICTORIA ISLAND · LAGOS</small></div><div><span>ENGAGE · EDUCATE · EMPOWER</span><small>PUBLIC DIPLOMACY · NIGERIA</small></div></div>
       </section>
-
-      <section className="sx-pillars">
-        <article><b>♟</b><h3>ENGAGE</h3><p>Open Dialogue</p></article>
-        <article><b>▤</b><h3>EDUCATE</h3><p>Expand Opportunities</p></article>
-        <article><b>♧</b><h3>EMPOWER</h3><p>Build the Future</p></article>
-        <div className="sx-pillar-caption">EXPLORE &nbsp;·&nbsp; LEARN &nbsp;·&nbsp; CONNECT &nbsp;·&nbsp; BUILD</div>
-      </section>
-
-      <section className="sx-stack" id="speakers">
-        <div className="sx-stack-head"><div><span>THE AMERICAN AI STACK</span><small>IDEAS. TOOLS. PEOPLE. IMPACT.</small></div><p>Bringing together innovation, creativity and collaboration<br/>to strengthen communities across Nigeria.</p><button onClick={() => scrollTo('programme')}>LEARN MORE &nbsp;→</button></div>
-        <div className="sx-stack-grid">
-          <div className="sx-stack-image sx-people"><span>PEOPLE. TECHNOLOGY.<br/>COMMUNITY. GLOBAL OPPORTUNITY.</span></div>
-          <div className="sx-live-panel">
-            <div className="sx-live-head"><span className={status.mode === 'live' && status.current ? 'live' : ''}>● {status.label}</span><small>{status.mode === 'preview' ? '21 SEPTEMBER' : days[status.dayIndex]?.date || 'SUMMIT'}</small></div>
-            <h3>{liveSession[1]}</h3>
-            <div className="sx-live-person"><span className="sx-avatar">AI</span><div><b>{liveFacilitator}</b><small>Lead Facilitator / Summit Programme</small></div></div>
-            <button className="sx-primary sx-live-button" onClick={openLive}>VIEW LIVE SESSION <b>→</b></button>
-            <div className="sx-tool-row"><button onClick={openLive}>◌<span>Parking Lot</span></button><button onClick={openLive}>▥<span>Live Poll</span></button><button onClick={openLive}>▤<span>Resources</span></button><button onClick={openLive}>▢<span>Take Notes</span></button></div>
-          </div>
-          <div className="sx-stack-image sx-ai"><span>A<br/>BRIGHTER<br/>MORE CONNECTED<br/>NIGERIA</span></div>
-        </div>
-      </section>
-
-      <section className="sx-programme" id="programme">
-        <div className="sx-programme-head"><div><span>▦ &nbsp; SUMMIT PROGRAMME</span><small>Three days of learning, collaboration and innovation.</small></div><a onClick={openLive}>VIEW FULL PROGRAMME &nbsp;→</a></div>
-        <div className="sx-day-tabs">{days.map((day,index)=><button key={day.id} className={index === 0 ? 'active' : ''} onClick={() => document.getElementById(`sx-day-${day.id}`)?.scrollIntoView({behavior:'smooth', block:'center'})}><b>{day.label}</b><span>{day.date}</span></button>)}</div>
-        <div className="sx-featured-sessions">
-          {days[0].sessions.slice(0,4).map((session,index)=><button className="sx-session-card" key={index} onClick={openLive}><time>{session[0]} <small>AM</small></time><b>{session[1]}</b><span>{session[2] || 'Main Hall · Plenary'}</span><i>→</i></button>)}
-        </div>
-        <div className="sx-full-days">{days.map(day=><div className="sx-day-block" id={`sx-day-${day.id}`} key={day.id}><div><b>{day.label}</b><span>{day.date}</span></div><section>{day.sessions.map((s,i)=><button key={i} onClick={openLive}><time>{s[0]}</time><span><b>{s[1]}</b><small>{s[2] || 'Summit Programme'}</small></span><i>→</i></button>)}</section></div>)}</div>
-      </section>
-
-      <section className="sx-connect" id="resources">
-        <div><span>JOIN A MOVEMENT OF POSSIBILITY</span><p>Connecting people. Strengthening communities. Building a brighter Nigeria together.</p></div>
-        <button onClick={enterSummit}>BE PART OF THE SUMMIT <b>→</b></button>
-      </section>
+      <section className="sx2-intro" id="sx2-about"><div className="sx2-section-no">01 / <span>THE SUMMIT</span></div><div className="sx2-intro-copy"><div className="sx2-eyebrow">A PRACTICAL AI SUMMIT FOR AMERICAN SPACES NIGERIA</div><h2>From <em>possibility</em><br/>to programme.</h2><p>This three-day working summit brings American Spaces leaders and specialists together to explore practical AI workflows, strengthen programming, build digital capacity and translate ideas into action.</p><div className="sx2-stat-row"><div><b>03</b><span>DAYS</span></div><div><b>30</b><span>AMERICAN SPACES</span></div><div><b>06</b><span>ROTATING GROUPS</span></div><div><b>01</b><span>SHARED MISSION</span></div></div></div><div className="sx2-intro-art"><div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="core">AI<span>×</span>NG</div><small>PEOPLE / TECHNOLOGY / IMPACT</small></div></section>
+      <section className="sx2-live"><div className="sx2-live-image"/><div className="sx2-live-card"><div className="sx2-live-top"><span className="live-dot"/> {status.label}<small>DAY {String(status.day+1).padStart(2,'0')} · {day.date}</small></div><div className="sx2-live-kicker">NOW / NEXT</div><h2>{featured[1]}</h2><p>{featured[2]||'Summit Programme'}</p><div className="sx2-live-actions"><button onClick={()=>navigate('/summit-2026/live')}>OPEN LIVE EXPERIENCE <span>→</span></button><button onClick={()=>navigate('/summit-2026')}>PARTICIPANT VIEW</button></div><div className="sx2-live-tools"><span>● REAL-TIME</span><span>↗ PARKING LOT</span><span>▣ LIVE POLLS</span><span>◌ RESOURCES</span></div></div></section>
+      <section className="sx2-programme" id="sx2-programme"><div className="sx2-section-heading"><div><div className="sx2-section-no">02 / <span>THE PROGRAMME</span></div><h2>Three days.<br/><em>One trajectory.</em></h2></div><p>Learning, experimentation, collaboration and implementation — sequenced to move from foundations to activation.</p></div><div className="sx2-day-selector">{days.map((d,i)=><button key={d.id} className={i===status.day?'active':''} onClick={()=>document.getElementById('sx2-'+d.id)?.scrollIntoView({behavior:'smooth',block:'center'})}><span>{d.label}</span><b>{d.title}</b><small>{d.date}</small></button>)}</div>{days.map((d)=><div className="sx2-day" id={'sx2-'+d.id} key={d.id}><div className="sx2-day-head"><span>DAY {d.label}</span><b>{d.title}</b><small>{d.date}</small></div><div className="sx2-sessions">{d.sessions.map((s,j)=><button key={j} onClick={()=>navigate('/summit-2026/live')}><time>{s[0]}</time><span><b>{s[1]}</b><small>{s[2]||'Summit Programme'}</small></span><i>↗</i></button>)}</div></div>)}</section>
+      <section className="sx2-groups" id="sx2-groups"><div className="sx2-section-no">03 / <span>GROUP ROTATION</span></div><div className="sx2-groups-head"><h2>Six groups.<br/><em>Three rotations.</em></h2><p>Your American Space determines your daily group. The rotation is designed to create fresh combinations of expertise, location, gender and years of service throughout the Summit.</p></div><div className="sx2-rotation">{Object.entries(groupRotation).map(([date,groups],di)=><article key={date}><header><b>DAY {di+1}</b><span>{date}</span></header>{groups.map(g=><div key={g[0]}><strong>{g[0]}</strong><span>{g[1]}</span></div>)}</article>)}</div><button className="sx2-outline" onClick={()=>navigate('/summit-2026/register')}>REGISTER & VIEW YOUR GROUP <span>→</span></button></section>
+      <section className="sx2-ai"><div className="sx2-ai-image"/><div className="sx2-ai-copy"><div className="sx2-section-no">04 / <span>THE AI STACK</span></div><h2>Use AI.<br/><em>Build capacity.</em></h2><p>Explore AI-assisted programme planning, visual design, audience engagement, research, presentation, strategic planning and vibe coding — with hands-on application throughout.</p><div className="sx2-stack-tags"><span>PROGRAMME DESIGN</span><span>VISUAL CONTENT</span><span>AUDIENCE ENGAGEMENT</span><span>RESEARCH</span><span>VIBE CODING</span><span>ICS ALIGNMENT</span></div></div></section>
+      <section className="sx2-final"><div className="sx2-final-grid"/><div className="sx2-section-no">05 / <span>READY</span></div><h2>THE NEXT<br/><em>SESSION IS YOURS.</em></h2><p>Register once. Join the live experience. Participate from your device. Stay connected across all three days.</p><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button></section>
     </main>
-
-    <footer className="sx-footer" id="contact">
-      <div className="sx-seal">✦</div><div><b>U.S. DEPARTMENT OF STATE</b><small>UNITED STATES OF AMERICA</small></div>
-      <nav><button onClick={() => scrollTo('about')}>About</button><button>Privacy</button><button>Accessibility</button><button onClick={() => scrollTo('contact')}>Contact</button></nav>
-      <div className="sx-social">in &nbsp; X &nbsp; ◎ &nbsp; ▶</div><span>#AmericanSpacesNG2026</span>
-    </footer>
+    <footer className="sx2-footer"><div className="sx2-footer-brand"><span className="sx2-mark"><i/><i/><i/></span><div><b>AMERICAN SPACES NIGERIA</b><small>SUMMIT 2026 · PUBLIC DIPLOMACY</small></div></div><div className="sx2-footer-meta"><span>21—23 SEPTEMBER 2026</span><span>BLACK DIAMOND SUITES · LAGOS</span><span>#AmericanSpacesNG2026</span></div><button onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}>BACK TO TOP ↑</button></footer>
   </div>
 }
