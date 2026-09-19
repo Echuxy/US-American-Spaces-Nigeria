@@ -171,3 +171,33 @@
     font-size:14px !important;
   }
 }
+
+
+/* Expandable daily programme schedules */
+.sx2-day-selector button{position:relative;padding-right:44px}
+.sx2-day-selector button>i,
+.sx2-day-head>i{font-style:normal;color:#55d8ff;font-size:20px;line-height:1;position:absolute;right:18px;top:50%;transform:translateY(-50%)}
+.sx2-day-selector button.active>i{color:#fff}
+.sx2-day{display:block;padding:0;border-top:1px solid #d6e0e5}
+.sx2-day-head{
+  position:relative;
+  width:100%;
+  display:block;
+  text-align:left;
+  background:transparent;
+  border:0;
+  padding:28px 54px 28px 0;
+  color:#142a3a;
+  cursor:pointer;
+}
+.sx2-day-head span,.sx2-day-head b,.sx2-day-head small{display:block}
+.sx2-day-head span{font-size:8px;color:#3083a8;letter-spacing:.15em;font-weight:900}
+.sx2-day-head b{font-size:22px;margin:6px 0}
+.sx2-day-head small{font-size:9px;color:#718491}
+.sx2-day:not(.is-open) .sx2-day-head{padding-bottom:28px}
+.sx2-day.is-open .sx2-day-head{padding-bottom:20px}
+.sx2-day .sx2-sessions{padding:0 0 38px}
+@media(max-width:700px){
+  .sx2-day-head{padding-right:45px}
+  .sx2-day-head>i{right:8px}
+}
