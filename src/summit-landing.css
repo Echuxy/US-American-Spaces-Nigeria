@@ -51,3 +51,40 @@
   .sx2-sessions b{font-size:15px}.sx2-sessions small{font-size:11px}
   .sx2-final h2{font-size:clamp(54px,15vw,90px)}
 }
+
+
+/* Balanced homepage typography — prevent text collisions and overflow */
+.sx2-hero{height:auto;min-height:820px;padding-top:150px;padding-bottom:150px}
+.sx2-hero-content{max-width:820px}
+.sx2 .summit-title{font-size:clamp(28px,3.6vw,56px);line-height:1.02}
+.sx2-hero h1{font-size:clamp(58px,7.4vw,112px);line-height:.9;margin:22px 0 26px;letter-spacing:-.055em}
+.sx2-hero-content p{font-size:clamp(15px,1.15vw,18px);line-height:1.65;max-width:650px}
+.sx2-main-cta,.sx2-ghost-cta,.sx2-nav-cta{font-size:10px}
+.sx2-nav nav button{font-size:11px}
+.sx2-brand b{font-size:12px}.sx2-brand small{font-size:8px}
+.sx2-section-no{font-size:10px}.sx2-eyebrow{font-size:10px}
+.sx2-intro h2,.sx2-section-heading h2,.sx2-groups-head h2,.sx2-ai h2{font-size:clamp(42px,4.7vw,68px);line-height:.96}
+.sx2-intro-copy p,.sx2-section-heading p,.sx2-groups-head p,.sx2-ai-copy p{font-size:14px;line-height:1.75}
+.sx2-stat-row b{font-size:30px}.sx2-stat-row span{font-size:8px}
+.sx2-live-card h2{font-size:clamp(32px,3.5vw,54px)}
+.sx2-live-card>p{font-size:12px}.sx2-live-actions button{font-size:9px}.sx2-live-tools{font-size:8px}
+.sx2-day-selector b{font-size:19px}.sx2-day-selector span,.sx2-day-head span{font-size:9px}.sx2-day-selector small,.sx2-day-head small{font-size:9px}
+.sx2-sessions b{font-size:11px}.sx2-sessions small{font-size:8px}.sx2-sessions time{font-size:10px}
+.sx2-rotation strong{font-size:14px}.sx2-rotation div span{font-size:9px}
+.sx2-stack-tags span{font-size:8px}.sx2-final h2{font-size:clamp(52px,7.5vw,100px)}.sx2-final p{font-size:13px}
+.sx2-footer-brand b{font-size:10px}.sx2-footer-brand small,.sx2-footer-meta{font-size:8px}
+@media(max-width:900px){
+ .sx2-hero{min-height:760px;padding-top:130px;padding-bottom:125px}
+ .sx2-hero h1{font-size:clamp(54px,10vw,82px)}
+ .sx2-intro h2,.sx2-section-heading h2,.sx2-groups-head h2,.sx2-ai h2{font-size:clamp(40px,7vw,60px)}
+}
+@media(max-width:700px){
+ .sx2-hero{min-height:720px;padding:105px 20px 125px;align-items:center}
+ .sx2 .summit-title{font-size:clamp(24px,7vw,36px);line-height:1.05}
+ .sx2-hero h1{font-size:clamp(52px,14vw,76px);line-height:.9;margin:18px 0 22px}
+ .sx2-hero-content p{font-size:15px}
+ .sx2-intro h2,.sx2-section-heading h2,.sx2-groups-head h2,.sx2-ai h2{font-size:clamp(38px,11vw,54px)}
+ .sx2-live-card h2{font-size:clamp(32px,9vw,46px)}
+ .sx2-sessions b{font-size:13px}.sx2-sessions small{font-size:9px}
+ .sx2-final h2{font-size:clamp(48px,13vw,76px)}
+}
