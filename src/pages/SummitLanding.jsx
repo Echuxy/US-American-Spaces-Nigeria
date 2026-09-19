@@ -65,7 +65,7 @@ export default function SummitLanding(){
   const navigate=useNavigate(), status=useMemo(getStatus,[]), day=days[status.day]||days[0], featured=status.current||status.next||day.sessions[0]
   return <div className="sx2">
     <header className="sx2-nav">
-      <div className="sx2-header-left"><button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><span className="sx2-mark"><i/><i/><i/></span><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button><SummitBrandMarks compact light /></div>
+      <div className="sx2-header-left"><button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><img className="sx2-brand-logo" src="https://norteamericano.cl/img/americanspaces.png" alt="American Spaces" /><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button><SummitBrandMarks compact light includeSpaces={false} /></div>
       <nav><button onClick={()=>document.getElementById('sx2-about')?.scrollIntoView({behavior:'smooth'})}>About</button><button onClick={()=>document.getElementById('sx2-programme')?.scrollIntoView({behavior:'smooth'})}>Programme</button><button onClick={()=>document.getElementById('sx2-groups')?.scrollIntoView({behavior:'smooth'})}>Groups</button><button onClick={()=>navigate('/summit-2026/live')}>Live</button></nav>
       <button className="sx2-nav-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button>
     </header>
