@@ -3,10 +3,13 @@ import { getSummitDeviceId, summitBackendEnabled, summitSupabase } from '../lib/
 
 const STORAGE_NAME = 'summit2026-name'
 const STORAGE_ANONYMOUS = 'summit2026-anonymous'
+const STORAGE_SPACE = 'summit2026-space'
+const AMERICAN_SPACES = ['Lagos (AmCenter)','Abuja','Kano','Enugu','Osogbo','Calabar','Ikeja','Ibadan','Keffi','Yola','Bauchi','Maiduguri','OgunTechHub','Katsina','Abeokuta','Abuja (AmCenter)','Benin City','Zaria','Lekki','Minna','Jos','Uyo','Gombe','UNILAG','Sokoto','Awka','Markurdi','Port Harcourt','Dutse']
 
 export default function SummitRegistration() {
   const [name, setName] = useState(() => localStorage.getItem(STORAGE_NAME) || '')
   const [anonymous, setAnonymous] = useState(() => localStorage.getItem(STORAGE_ANONYMOUS) === 'true')
+  const [americanSpace, setAmericanSpace] = useState(() => localStorage.getItem(STORAGE_SPACE) || '')
   const [registered, setRegistered] = useState(false)
   const [backendMessage, setBackendMessage] = useState('')
   const [saving, setSaving] = useState(false)
@@ -21,12 +24,13 @@ export default function SummitRegistration() {
   const register = async event => {
     event.preventDefault()
     const value = name.trim()
-    if (!value || saving) return
+    if (!value || !americanSpace || saving) return
 
     setSaving(true)
     setBackendMessage('')
     localStorage.setItem(STORAGE_NAME, value)
     localStorage.setItem(STORAGE_ANONYMOUS, String(anonymous))
+    localStorage.setItem(STORAGE_SPACE, americanSpace)
 
     if (summitSupabase) {
       const deviceId = getSummitDeviceId()
@@ -34,6 +38,7 @@ export default function SummitRegistration() {
         p_display_name: value,
         p_anonymous_parking: anonymous,
         p_device_id: deviceId,
+        p_american_space: americanSpace,
       })
       if (error) {
         console.error('Summit participant registration failed', error)
@@ -64,7 +69,7 @@ export default function SummitRegistration() {
           <div>
             {registered ? (
               <div>
-                <div style={{ padding: 14, borderRadius: 10, background: '#eef6ef', color: '#245a32', marginBottom: 14 }}>Registration confirmed for <strong>{name.trim()}</strong>.</div>
+                <div style={{ padding: 14, borderRadius: 10, background: '#eef6ef', color: '#245a32', marginBottom: 14 }}>Registration confirmed for <strong>{name.trim()}</strong> · <strong>{americanSpace}</strong>.</div>
                 <p style={{ color: '#526277', lineHeight: 1.5 }}>{backendMessage}</p>
                 <a href="/summit-2026" style={{ display: 'inline-block', background: '#173b68', color: '#fff', padding: '11px 15px', borderRadius: 8, textDecoration: 'none', fontWeight: 700 }}>Enter Summit</a>
               </div>
@@ -72,6 +77,12 @@ export default function SummitRegistration() {
               <form onSubmit={register}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#526277', marginBottom: 6 }}>Display name</label>
                 <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" autoComplete="name" maxLength={120} required style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #d5dde7', borderRadius: 9, padding: 11, fontSize: 14, marginBottom: 12 }} />
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#526277', marginBottom: 6 }}>American Space</label>
+                <select value={americanSpace} onChange={e => setAmericanSpace(e.target.value)} required style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #d5dde7', borderRadius: 9, padding: 11, fontSize: 14, marginBottom: 12, background: '#fff' }}>
+                  <option value="">Select your American Space</option>
+                  {AMERICAN_SPACES.map(space => <option key={space} value={space}>{space}</option>)}
+                </select>
+                <div style={{ fontSize: 11, color: '#718096', marginBottom: 12 }}>Your American Space is used to show your pre-arranged daily group. The groups rotate each day.</div>
                 <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, color: '#526277', marginBottom: 16 }}><input type="checkbox" checked={anonymous} onChange={e => setAnonymous(e.target.checked)} /> Allow anonymous Parking Lot posts</label>
                 <button type="submit" disabled={saving} style={{ border: 0, background: saving ? '#7d8ea5' : '#173b68', color: '#fff', borderRadius: 9, padding: '11px 16px', cursor: saving ? 'wait' : 'pointer', fontWeight: 700 }}>{saving ? 'Confirming…' : 'Register & Continue'}</button>
               </form>
