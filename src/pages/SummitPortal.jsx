@@ -29,12 +29,13 @@ export default function SummitPortal(){
   useEffect(()=>{if(!summitSupabase||!sessionId){setContent(null);return}Promise.all([summitSupabase.from('sessions').select('id,facilitator,facilitator_bio,facilitator_headshot_url').eq('id',sessionId).maybeSingle(),summitSupabase.from('session_resources').select('id,title,resource_url,resource_type,sort_order').eq('session_id',sessionId).order('sort_order')]).then(([a,b])=>setContent({session:a.data||null,resources:b.data||[]}))},[sessionId])
   useEffect(()=>realtime.subscribe(e=>{const {type,payload={}}=e;if(type===summitEventTypes.SESSION_CHANGED&&payload.dayId){const d=days.findIndex(x=>x.id===payload.dayId);if(d>=0){setDayIndex(d);setSelected(Number.isInteger(payload.sessionIndex)?payload.sessionIndex:0);setSlide(1)}}if(type===summitEventTypes.SLIDE_CHANGED&&Number.isInteger(payload.slide))setSlide(payload.slide);if(type===summitEventTypes.PARKING_POST&&payload.post)setParking(x=>({...x,[payload.post.dayId]:[...(x[payload.post.dayId]||[]),payload.post].filter((v,i,a)=>a.findIndex(z=>z.id===v.id)===i)}));if(type===summitEventTypes.PARKING_MODERATION&&payload.id)setParking(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[k,v.map(p=>p.id===payload.id?{...p,visible:payload.visible!==false}:p)])));if(type===summitEventTypes.POLL_PUBLISHED)setPoll({id:payload.pollId||e.id,question:payload.question,options:payload.options||[]});if(type===summitEventTypes.POLL_CLOSED)setPoll(null);if(type===summitEventTypes.ANNOUNCEMENT&&payload.text)setAnnouncements(a=>[payload.text,...a].slice(0,3))}),[realtime,days])
   useEffect(()=>()=>realtime.close(),[realtime]);useEffect(()=>localStorage.setItem('summit2026-notes',notes),[notes]);useEffect(()=>{if(name)localStorage.setItem('summit2026-name',name)},[name]);useEffect(()=>localStorage.setItem('summit2026-anonymous',String(anonymous)),[anonymous])
-  const getLagosSlot=()=>{const parts=new Intl.DateTimeFormat('en-NG',{timeZone:'Africa/Lagos',hour:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const hour=Number(parts.find(p=>p.type==='hour')?.value||0);return hour<13?'AM':'PM'}
+  const getLagosClock=()=>{const parts=new Intl.DateTimeFormat('en-NG',{timeZone:'Africa/Lagos',hour:'2-digit',hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const get=k=>parts.find(p=>p.type===k)?.value||'';return {date:`${get('year')}-${get('month')}-${get('day')}`,hour:Number(get('hour')||0)}}
   const checkIn=async()=>{
     if(!summitSupabase||!name.trim()){setAttendanceMessage('Complete participant registration before checking in.');return}
-    const currentDay=day?.id
-    if(!['day1','day2','day3'].includes(currentDay)){setAttendanceMessage('Attendance is available for Summit Days 1–3 only.');return}
-    const slot=getLagosSlot()
+    const clock=getLagosClock()
+    const currentDay=clock.date==='2026-09-21'?'day1':clock.date==='2026-09-22'?'day2':clock.date==='2026-09-23'?'day3':null
+    if(!currentDay){setAttendanceMessage('Attendance is available only during Summit Days 1–3.');return}
+    const slot=clock.hour<13?'AM':'PM'
     setAttendanceBusy(true);setAttendanceMessage('')
     const {data,error}=await summitSupabase.rpc('check_in_summit_participant',{p_device_id:getSummitDeviceId(),p_day_id:currentDay,p_slot:slot})
     if(error){setAttendanceMessage(error.message||'Attendance check-in is not available yet.');setAttendanceBusy(false);return}
