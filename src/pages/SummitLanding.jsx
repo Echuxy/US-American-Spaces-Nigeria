@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../summit-landing.css'
 import SummitBrandMarks from '../components/SummitBrandMarks'
@@ -63,6 +63,7 @@ function getStatus(){
 
 export default function SummitLanding(){
   const navigate=useNavigate(), status=useMemo(getStatus,[]), day=days[status.day]||days[0], featured=status.current||status.next||day.sessions[0]
+  const [openDay,setOpenDay]=useState(null)
   return <div className="sx2">
     <header className="sx2-nav">
       <div className="sx2-header-left"><button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><img className="sx2-brand-logo" src="https://norteamericano.cl/img/americanspaces.png" alt="American Spaces" /><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button><SummitBrandMarks compact light includeSpaces /></div>
@@ -87,7 +88,21 @@ export default function SummitLanding(){
       </section>
       <section className="sx2-intro" id="sx2-about"><div className="sx2-section-no">01 / <span>THE SUMMIT</span></div><div className="sx2-intro-copy"><div className="sx2-eyebrow">A PRACTICAL AI SUMMIT FOR AMERICAN SPACES NIGERIA</div><h2>From <em>possibility</em><br/>to programme.</h2><p>This three-day working summit brings American Spaces leaders and specialists together to explore practical AI workflows, strengthen programming, build digital capacity and translate ideas into action.</p><div className="sx2-stat-row"><div><b>03</b><span>DAYS</span></div><div><b>30</b><span>AMERICAN SPACES</span></div><div><b>06</b><span>ROTATING GROUPS</span></div><div><b>01</b><span>SHARED MISSION</span></div></div></div><div className="sx2-intro-art"><div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="core">AI<span>×</span>NG</div><small>PEOPLE / TECHNOLOGY / IMPACT</small></div></section>
       <section className="sx2-live"><div className="sx2-live-image"/><div className="sx2-live-card"><div className="sx2-live-top"><span className="live-dot"/> {status.label}<small>DAY {String(status.day+1).padStart(2,'0')} · {day.date}</small></div><div className="sx2-live-kicker">NOW / NEXT</div><h2>{featured[1]}</h2><p>{featured[2]||'Summit Programme'}</p><div className="sx2-live-actions"><button onClick={()=>navigate('/summit-2026/live')}>OPEN LIVE EXPERIENCE <span>→</span></button><button onClick={()=>navigate('/summit-2026')}>PARTICIPANT VIEW</button></div><div className="sx2-live-tools"><span>● REAL-TIME</span><span>↗ PARKING LOT</span><span>▣ LIVE POLLS</span><span>◌ RESOURCES</span></div></div></section>
-      <section className="sx2-programme" id="sx2-programme"><div className="sx2-section-heading"><div><div className="sx2-section-no">02 / <span>THE PROGRAMME</span></div><h2>Three days.<br/><em>One trajectory.</em></h2></div><p>Learning, experimentation, collaboration and implementation — sequenced to move from foundations to activation.</p></div><div className="sx2-day-selector">{days.map((d,i)=><button key={d.id} className={i===status.day?'active':''} onClick={()=>document.getElementById('sx2-'+d.id)?.scrollIntoView({behavior:'smooth',block:'center'})}><span>{d.label}</span><b>{d.title}</b><small>{d.date}</small></button>)}</div>{days.map((d)=><div className="sx2-day" id={'sx2-'+d.id} key={d.id}><div className="sx2-day-head"><span>DAY {d.label}</span><b>{d.title}</b><small>{d.date}</small></div><div className="sx2-sessions">{d.sessions.map((s,j)=><button key={j} onClick={()=>navigate('/summit-2026/live')}><time>{s[0]}</time><span><b>{s[1]}</b><small>{s[2]||'Summit Programme'}</small></span><i>↗</i></button>)}</div></div>)}</section>
+      <section className="sx2-programme" id="sx2-programme"><div className="sx2-section-heading"><div><div className="sx2-section-no">02 / <span>THE PROGRAMME</span></div><h2>Three days.<br/><em>One trajectory.</em></h2></div><p>Learning, experimentation, collaboration and implementation — sequenced to move from foundations to activation.</p></div><div className="sx2-day-selector">{days.map((d,i)=>{
+  const isOpen=openDay===d.id
+  return <button key={d.id} className={isOpen?'active':''} aria-expanded={isOpen} onClick={()=>{
+    setOpenDay(isOpen?null:d.id)
+    requestAnimationFrame(()=>document.getElementById('sx2-'+d.id)?.scrollIntoView({behavior:'smooth',block:'center'}))
+  }}>
+    <span>{d.label}</span><b>{d.title}</b><small>{d.date}</small><i>{isOpen?'−':'+'}</i>
+  </button>
+})}</div>
+{days.map((d)=><div className={`sx2-day ${openDay===d.id?'is-open':''}`} id={'sx2-'+d.id} key={d.id}>
+  <button className="sx2-day-head" aria-expanded={openDay===d.id} onClick={()=>setOpenDay(openDay===d.id?null:d.id)}>
+    <span>DAY {d.label}</span><b>{d.title}</b><small>{d.date}</small><i>{openDay===d.id?'−':'+'}</i>
+  </button>
+  {openDay===d.id && <div className="sx2-sessions">{d.sessions.map((s,j)=><button key={j} onClick={()=>navigate('/summit-2026/live')}><time>{s[0]}</time><span><b>{s[1]}</b><small>{s[2]||'Summit Programme'}</small></span><i>↗</i></button>)}</div>}
+</div>)}</section>
       <section className="sx2-groups" id="sx2-groups"><div className="sx2-section-no">03 / <span>GROUP ROTATION</span></div><div className="sx2-groups-head"><h2>Six groups.<br/><em>Three rotations.</em></h2><p>Your American Space determines your daily group. The rotation is designed to create fresh combinations of expertise, location, gender and years of service throughout the Summit.</p></div><div className="sx2-rotation">{Object.entries(groupRotation).map(([date,groups],di)=><article key={date}><header><b>DAY {di+1}</b><span>{date}</span></header>{groups.map(g=><div key={g[0]}><strong>{g[0]}</strong><span>{g[1]}</span></div>)}</article>)}</div><button className="sx2-outline" onClick={()=>navigate('/summit-2026/register')}>REGISTER & VIEW YOUR GROUP <span>→</span></button></section>
       <section className="sx2-ai"><div className="sx2-ai-image"/><div className="sx2-ai-copy"><div className="sx2-section-no">04 / <span>THE AI STACK</span></div><h2>Use AI.<br/><em>Build capacity.</em></h2><p>Explore AI-assisted programme planning, visual design, audience engagement, research, presentation, strategic planning and vibe coding — with hands-on application throughout.</p><div className="sx2-stack-tags"><span>PROGRAMME DESIGN</span><span>VISUAL CONTENT</span><span>AUDIENCE ENGAGEMENT</span><span>RESEARCH</span><span>VIBE CODING</span><span>ICS ALIGNMENT</span></div></div></section>
       <section className="sx2-final"><div className="sx2-final-grid"/><div className="sx2-section-no">05 / <span>READY</span></div><h2>THE NEXT<br/><em>SESSION IS YOURS.</em></h2><p>Register once. Join the live experience. Participate from your device. Stay connected across all three days.</p><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button></section>
