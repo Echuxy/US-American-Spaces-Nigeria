@@ -16,3 +16,38 @@
 @media(max-width:1100px){.sx2-header-left>.summit-brand-marks{display:none}}
 
 .sx2-marquee{position:relative;z-index:12;height:78px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(3,15,31,.82);border-top:1px solid rgba(76,211,255,.28);border-bottom:1px solid rgba(76,211,255,.18);backdrop-filter:blur(12px);box-shadow:0 12px 40px rgba(0,0,0,.18)}.sx2-marquee:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(48,202,255,.06) 50%,transparent 100%);animation:sx2-title-sweep 5s ease-in-out infinite}.sx2-marquee:after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#43dfff 50%,transparent);opacity:.65}.sx2-marquee-glow{position:absolute;width:26%;height:2px;left:50%;top:50%;transform:translate(-50%,-50%);background:#48ddff;filter:blur(12px);opacity:.18}.sx2-marquee-track{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:100%;white-space:nowrap;transform:none;animation:none}.sx2-marquee-track span{font-size:clamp(22px,2.4vw,40px);font-weight:950;font-style:italic;letter-spacing:.035em;line-height:1;text-transform:uppercase;color:#f7fcff;text-shadow:0 6px 25px rgba(0,0,0,.42);animation:sx2-title-settle .9s cubic-bezier(.2,.8,.2,1) both}.sx2-marquee-track em{font-style:italic;color:#d8f5ff}.sx2-marquee-track b{font-style:italic;color:#42ddff;margin-left:8px;text-shadow:0 0 22px rgba(66,221,255,.45)}.sx2-marquee-track i{display:none}.sx2-marquee:hover .sx2-marquee-track{animation:none}.sx2-overline{display:flex;align-items:center;gap:9px;margin-bottom:4px;color:#eaf9ff;font-size:12px;letter-spacing:.15em;font-weight:850;font-style:italic;text-transform:uppercase}.summit-title{display:inline-block;position:relative;overflow:hidden;padding-right:14px;font-family:Impact,"Arial Black","Trebuchet MS",sans-serif;font-size:clamp(34px,4.6vw,68px);line-height:.95;font-weight:950;font-style:italic;letter-spacing:-.035em;transform:skewX(-4deg);background:linear-gradient(100deg,#fff 0%,#f7fdff 38%,#9fe9ff 50%,#fff 62%,#f7fdff 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:summit-title-shimmer 4.5s ease-in-out infinite,summit-title-rise .9s cubic-bezier(.2,.8,.2,1) both}.summit-title b{font-family:Impact,"Arial Black","Trebuchet MS",sans-serif;color:#42ddff;font-style:italic;margin-left:10px;font-size:1.02em;-webkit-text-fill-color:#42ddff;animation:summit-year-pulse 2.8s ease-in-out infinite}.sx2-overline b{color:#42ddff;font-style:italic;margin-left:2px}@keyframes summit-title-shimmer{0%,20%{background-position:120% 0}55%,100%{background-position:-20% 0}}@keyframes summit-title-rise{from{opacity:0;transform:translateY(10px) skewX(-3deg);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}@keyframes summit-year-pulse{0%,100%{text-shadow:0 0 0 rgba(66,221,255,0)}50%{text-shadow:0 0 18px rgba(66,221,255,.65)}}@keyframes sx2-title-sweep{0%,100%{transform:translateX(-35%);opacity:.35}50%{transform:translateX(35%);opacity:.8}}@keyframes sx2-title-settle{from{opacity:0;transform:translateY(8px) skewX(-2deg);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}@media(prefers-reduced-motion:reduce){.sx2-marquee-track{animation:none;transform:none}.sx2-marquee{overflow-x:auto}}@media(max-width:700px){.sx2-marquee{height:46px}.sx2-marquee-track{gap:20px;animation-duration:28s}.sx2-marquee:before,.sx2-marquee:after{width:55px}.sx2-marquee-track i{font-size:22px}}@media(max-width:700px){.sx2-marquee{height:68px}.sx2-marquee:before,.sx2-marquee:after{width:70px}.sx2-marquee-track{gap:22px;animation-duration:24s}.sx2-marquee-track span{font-size:27px}.sx2-marquee-track i{font-size:16px}.sx2-overline{font-size:10px;letter-spacing:.12em}.sx2-marquee-glow{width:60%}}@media(prefers-reduced-motion:reduce){.sx2-marquee:before,.sx2-marquee-track{animation:none}.sx2-marquee-track{transform:none}}@media(max-width:700px){.sx2-marquee{height:62px}.sx2-marquee-track span{font-size:20px;letter-spacing:.02em}.sx2-overline{font-size:9px;letter-spacing:.1em;gap:7px}}@media(max-width:700px){.summit-title{font-size:clamp(27px,8.2vw,42px);letter-spacing:-.025em;line-height:1}.summit-title b{margin-left:6px}}
+
+/* Typography upgrade — September 2026 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800;900&display=swap');
+.sx2,
+.sx2 button{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
+.sx2 h1,.sx2 h2,.sx2 h3,.sx2 .summit-title,.sx2 .sx2-marquee-track span,.sx2 .sx2-day-selector b,.sx2 .sx2-day-head b{font-family:'Montserrat',ui-sans-serif,system-ui,sans-serif}
+.sx2-hero h1{font-size:clamp(78px,10.5vw,168px);line-height:.86;font-weight:900;letter-spacing:-.065em}
+.sx2 .summit-title{font-family:'Montserrat',sans-serif;font-size:clamp(38px,5.2vw,76px);font-weight:900;letter-spacing:-.035em}
+.sx2-marquee-track span{font-family:'Montserrat',sans-serif;font-size:clamp(27px,3.1vw,50px);font-weight:900}
+.sx2-hero-content p{font-size:clamp(18px,1.55vw,23px);line-height:1.65;max-width:760px}
+.sx2-main-cta,.sx2-ghost-cta,.sx2-nav-cta{font-size:12px;font-weight:800}
+.sx2-nav nav button{font-size:13px;font-weight:700}
+.sx2-brand b{font-size:14px}.sx2-brand small{font-size:10px}
+.sx2-section-no{font-size:12px}.sx2-eyebrow{font-size:12px}
+.sx2-intro h2,.sx2-section-heading h2,.sx2-groups-head h2,.sx2-ai h2{font-family:'Montserrat',sans-serif;font-size:clamp(50px,6vw,88px);font-weight:800}
+.sx2-intro-copy p,.sx2-section-heading p,.sx2-groups-head p,.sx2-ai-copy p{font-size:clamp(16px,1.35vw,20px);line-height:1.75}
+.sx2-stat-row b{font-size:36px}.sx2-stat-row span{font-size:10px}
+.sx2-live-kicker{font-size:12px}.sx2-live-card h2{font-family:'Montserrat',sans-serif;font-size:clamp(38px,4.2vw,68px);font-weight:800}
+.sx2-live-card>p{font-size:15px}.sx2-live-actions button{font-size:11px;font-weight:700}.sx2-live-tools{font-size:9px}
+.sx2-day-selector span,.sx2-day-head span{font-size:11px}.sx2-day-selector b{font-size:22px}.sx2-day-selector small,.sx2-day-head small{font-size:11px}
+.sx2-sessions b{font-size:14px}.sx2-sessions small{font-size:10px}.sx2-sessions time{font-size:12px}
+.sx2-rotation header b{font-size:11px}.sx2-rotation header span{font-size:10px}.sx2-rotation strong{font-size:16px}.sx2-rotation div span{font-size:11px}
+.sx2-outline{font-size:12px;font-weight:800}
+.sx2-stack-tags span{font-size:10px}.sx2-final h2{font-family:'Montserrat',sans-serif;font-size:clamp(62px,9vw,128px);font-weight:900}.sx2-final p{font-size:15px}
+.sx2-footer-brand b{font-size:11px}.sx2-footer-brand small,.sx2-footer-meta{font-size:9px}.sx2-footer>button{font-size:10px}
+@media(max-width:700px){
+  .sx2-hero h1{font-size:clamp(62px,18vw,100px)}
+  .sx2 .summit-title{font-size:clamp(30px,9vw,48px)}
+  .sx2-marquee-track span{font-size:23px}
+  .sx2-hero-content p{font-size:17px}
+  .sx2-intro h2,.sx2-section-heading h2,.sx2-groups-head h2,.sx2-ai h2{font-size:clamp(44px,13vw,66px)}
+  .sx2-live-card h2{font-size:clamp(34px,10vw,52px)}
+  .sx2-sessions b{font-size:15px}.sx2-sessions small{font-size:11px}
+  .sx2-final h2{font-size:clamp(54px,15vw,90px)}
+}
