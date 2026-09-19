@@ -70,23 +70,18 @@ export default function SummitLanding(){
       <button className="sx2-nav-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button>
     </header>
     <div className="sx2-marquee" aria-label="Summit of American Spaces in Nigeria 2026">
+        <div className="sx2-marquee-glow"/>
         <div className="sx2-marquee-track">
-          <span>SUMMIT OF AMERICAN SPACES IN NIGERIA <b>2026</b></span><i>»</i>
-          <span>PEOPLE</span><i>»</i><span>IDEAS</span><i>»</i><span>TECHNOLOGY</span><i>»</i>
-          <span>OPPORTUNITIES</span><i>»</i><span>STRONGER NIGERIA</span><i>»</i>
-          <span>BRIGHTER FUTURES</span><i>»</i><span>AMERICAN SPACES</span><i>»</i>
-          <span>BUILT ON AMERICAN AI</span><i>»</i>
-          <span>SUMMIT OF AMERICAN SPACES IN NIGERIA <b>2026</b></span><i>»</i>
-          <span>PEOPLE</span><i>»</i><span>IDEAS</span><i>»</i><span>TECHNOLOGY</span><i>»</i>
-          <span>OPPORTUNITIES</span><i>»</i><span>STRONGER NIGERIA</span><i>»</i>
-          <span>BRIGHTER FUTURES</span><i>»</i><span>AMERICAN SPACES</span><i>»</i>
-          <span>BUILT ON AMERICAN AI</span><i>»</i>
+          <span>SUMMIT OF AMERICAN SPACES <em>IN NIGERIA</em> <b>2026</b></span><i>✦</i>
+          <span>SUMMIT OF AMERICAN SPACES <em>IN NIGERIA</em> <b>2026</b></span><i>✦</i>
+          <span>SUMMIT OF AMERICAN SPACES <em>IN NIGERIA</em> <b>2026</b></span><i>✦</i>
+          <span>SUMMIT OF AMERICAN SPACES <em>IN NIGERIA</em> <b>2026</b></span><i>✦</i>
         </div>
       </div>
       <main>
       <section className="sx2-hero">
         <div className="sx2-hero-image"/><div className="sx2-hero-glow"/><div className="sx2-grid"/>
-        <div className="sx2-hero-content"><div className="sx2-overline"><span className="pulse"/><strong className="summit-kicker">SUMMIT OF AMERICAN SPACES <span>IN NIGERIA</span> <b>2026</b></strong></div><h1>BUILT<br/><em>ON AMERICAN AI.</em></h1><p>Equipping American Spaces Nigeria to showcase the U.S. AI Stack through people, programming, creativity and practical innovation.</p><div className="sx2-actions"><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>JOIN THE SUMMIT <span>→</span></button><button className="sx2-ghost-cta" onClick={()=>navigate('/summit-2026/live')}><span className="play">▶</span> ENTER LIVE SCREEN</button></div></div>
+        <div className="sx2-hero-content"><div className="sx2-overline"><span className="pulse"/> SUMMIT 2026 <b>THE AI ERA</b></div><h1>BUILT<br/><em>ON AMERICAN AI.</em></h1><p>Equipping American Spaces Nigeria to showcase the U.S. AI Stack through people, programming, creativity and practical innovation.</p><div className="sx2-actions"><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>JOIN THE SUMMIT <span>→</span></button><button className="sx2-ghost-cta" onClick={()=>navigate('/summit-2026/live')}><span className="play">▶</span> ENTER LIVE SCREEN</button></div></div>
         <div className="sx2-hero-index"><span>01</span><i/><span>03</span></div>
         <div className="sx2-hero-bottom"><div><span>21—23</span><small>SEPTEMBER 2026</small></div><div><span>BLACK DIAMOND SUITES</span><small>VICTORIA ISLAND · LAGOS</small></div><div><span>ENGAGE · EDUCATE · EMPOWER</span><small>PUBLIC DIPLOMACY · NIGERIA</small></div></div>
       </section>
