@@ -1,3 +1,5 @@
+import '../summit-brand-marks.css'
+
 const LOGOS = {
   mission: 'https://static.wixstatic.com/media/ac90b5_0c0b47ec81f24849a8f343933ac455e2~mv2.png/v1/fill/w_604%2Ch_604%2Cal_c/usm-nigeria-seal.png',
   spaces: 'https://norteamericano.cl/img/americanspaces.png',
