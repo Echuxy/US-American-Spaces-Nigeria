@@ -59,6 +59,7 @@ export default function SummitParticipantManager() {
     const channel = summitSupabase
       .channel('summit-participant-management')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'participants' }, () => loadParticipants())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'poll_responses' }, () => loadParticipants())
       .subscribe()
 
     return () => {
@@ -75,7 +76,7 @@ export default function SummitParticipantManager() {
     const dayAttendance = new Set(attendance.filter(a => a.day_id === attendanceDay).map(a => a.participant_id)).size
     const pollVoters = new Set(pollVotes.map(v => v.participant_id)).size
     return { active, named, anonymous, dayAttendance, pollVoters }
-  }, [participants])
+  }, [participants, attendance, attendanceDay, pollVotes])
 
   const exportCsv = () => {
     const header = ['Participant Name', 'Registered At', 'Last Seen', 'Parking Lot Display', 'Latest Poll Vote', 'Device ID']
