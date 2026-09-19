@@ -46,7 +46,7 @@ export default function SummitRegistration() {
         setSaving(false)
         return
       }
-      setBackendMessage('Registration is confirmed on the Summit backend. Your device is ready for live participation and attendance tracking.')
+      setBackendMessage('Registration is confirmed on the Summit backend. Your device is registered for live participation and attendance check-in. Attendance is recorded once per morning and once per afternoon session.')
     } else {
       setBackendMessage('Registration is saved on this device, but the live Summit backend is not configured in this deployment.')
     }
