@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">United States Mission Nigeria flag mark</title>
+  <desc id="desc">Rectangular United States flag mark used for U.S. Mission Nigeria branding.</desc>
+  <rect width="1200" height="800" fill="#fff"/>
+  <g fill="#b22234">
+    <rect y="0" width="1200" height="61.54"/><rect y="123.08" width="1200" height="61.54"/>
+    <rect y="246.15" width="1200" height="61.54"/><rect y="369.23" width="1200" height="61.54"/>
+    <rect y="492.31" width="1200" height="61.54"/><rect y="615.38" width="1200" height="61.54"/>
+    <rect y="738.46" width="1200" height="61.54"/>
+  </g>
+  <rect width="480" height="430" fill="#3c3b6e"/>
+  <g fill="#fff">
+    <g transform="translate(40 32)">
+      <circle cx="20" cy="20" r="9"/><circle cx="80" cy="20" r="9"/><circle cx="140" cy="20" r="9"/><circle cx="200" cy="20" r="9"/><circle cx="260" cy="20" r="9"/><circle cx="320" cy="20" r="9"/><circle cx="380" cy="20" r="9"/>
+      <circle cx="50" cy="70" r="9"/><circle cx="110" cy="70" r="9"/><circle cx="170" cy="70" r="9"/><circle cx="230" cy="70" r="9"/><circle cx="290" cy="70" r="9"/><circle cx="350" cy="70" r="9"/>
+      <circle cx="20" cy="120" r="9"/><circle cx="80" cy="120" r="9"/><circle cx="140" cy="120" r="9"/><circle cx="200" cy="120" r="9"/><circle cx="260" cy="120" r="9"/><circle cx="320" cy="120" r="9"/><circle cx="380" cy="120" r="9"/>
+      <circle cx="50" cy="170" r="9"/><circle cx="110" cy="170" r="9"/><circle cx="170" cy="170" r="9"/><circle cx="230" cy="170" r="9"/><circle cx="290" cy="170" r="9"/><circle cx="350" cy="170" r="9"/>
+      <circle cx="20" cy="220" r="9"/><circle cx="80" cy="220" r="9"/><circle cx="140" cy="220" r="9"/><circle cx="200" cy="220" r="9"/><circle cx="260" cy="220" r="9"/><circle cx="320" cy="220" r="9"/><circle cx="380" cy="220" r="9"/>
+      <circle cx="50" cy="270" r="9"/><circle cx="110" cy="270" r="9"/><circle cx="170" cy="270" r="9"/><circle cx="230" cy="270" r="9"/><circle cx="290" cy="270" r="9"/><circle cx="350" cy="270" r="9"/>
+      <circle cx="20" cy="320" r="9"/><circle cx="80" cy="320" r="9"/><circle cx="140" cy="320" r="9"/><circle cx="200" cy="320" r="9"/><circle cx="260" cy="320" r="9"/><circle cx="320" cy="320" r="9"/><circle cx="380" cy="320" r="9"/>
+    </g>
+  </g>
+</svg>
