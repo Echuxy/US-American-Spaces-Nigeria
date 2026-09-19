@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { createSummitRealtime, summitEventTypes } from '../lib/summitRealtime'
 import '../summit-landing.css'
 import SummitBrandMarks from '../components/SummitBrandMarks'
 
@@ -64,6 +65,25 @@ function getStatus(){
 export default function SummitLanding(){
   const navigate=useNavigate(), status=useMemo(getStatus,[]), day=days[status.day]||days[0], featured=status.current||status.next||day.sessions[0]
   const [openDay,setOpenDay]=useState(null)
+  const realtime=useMemo(()=>createSummitRealtime(),[])
+  const [poll,setPoll]=useState(null),[pollVisible,setPollVisible]=useState(false),[news,setNews]=useState(''),[newsVisible,setNewsVisible]=useState(false),[ticker,setTicker]=useState(''),[tickerVisible,setTickerVisible]=useState(false),[tickerKey,setTickerKey]=useState(0)
+  useEffect(()=>{
+    const unsubscribe=realtime.subscribe(e=>{
+      const {type,payload={}}=e
+      if(type===summitEventTypes.POLL_PUBLISHED){setPoll({id:payload.pollId||e.id,question:payload.question,options:payload.options||[]});setPollVisible(true)}
+      if(type===summitEventTypes.POLL_CLOSED){setPollVisible(false);setPoll(null)}
+      if(type===summitEventTypes.ANNOUNCEMENT&&payload.text){
+        setNews(payload.text);setNewsVisible(true);setTicker(payload.text);setTickerVisible(false);setTickerKey(v=>v+1)
+        window.setTimeout(()=>setNewsVisible(false),5200)
+        window.setTimeout(()=>setTickerVisible(true),5200)
+      }
+    })
+    return ()=>{unsubscribe();realtime.close()}
+  },[realtime])
+  const openLivePoll=()=>{
+    if(poll) sessionStorage.setItem('summit2026-open-poll',JSON.stringify(poll))
+    window.location.href='/summit-2026/participant'
+  }
   return <div className="sx2">
     <header className="sx2-nav">
       <div className="sx2-header-left"><button className="sx2-brand" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}><img className="sx2-brand-logo" src="https://norteamericano.cl/img/americanspaces.png" alt="American Spaces" /><span><b>AMERICAN SPACES</b><small>NIGERIA · 2026</small></span></button><SummitBrandMarks compact light includeSpaces /></div>
@@ -80,6 +100,8 @@ export default function SummitLanding(){
         </div>
       </div>
       <main>
+      {poll&&pollVisible&&<button type="button" className="sx2-live-poll" onClick={openLivePoll} aria-label="Open live poll"><small>LIVE POLL · CLICK TO PARTICIPATE</small><strong>{poll.question}</strong><span>Open the participant experience to submit your vote.</span></button>}
+      {news&&newsVisible&&<div className="sx2-flash-news" role="status"><small>FLASH NEWS</small><span>{news}</span></div>}
       <section className="sx2-hero">
         <div className="sx2-hero-image"/><div className="sx2-hero-glow"/><div className="sx2-grid"/>
         <div className="sx2-hero-content"><div className="sx2-overline"><span className="pulse"/><span className="summit-title">SUMMIT OF AMERICAN SPACES IN NIGERIA <b>2026</b></span></div><h1>BUILT<br/><em>ON AMERICAN AI.</em></h1><p>Equipping American Spaces Nigeria to showcase the U.S. AI Stack through people, programming, creativity and practical innovation.</p><div className="sx2-actions"><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>JOIN THE SUMMIT <span>→</span></button><button className="sx2-ghost-cta" onClick={()=>navigate('/summit-2026/live')}><span className="play">▶</span> ENTER LIVE SCREEN</button></div></div>
@@ -108,5 +130,6 @@ export default function SummitLanding(){
       <section className="sx2-final"><div className="sx2-final-grid"/><div className="sx2-section-no">05 / <span>READY</span></div><h2>THE NEXT<br/><em>SESSION IS YOURS.</em></h2><p>Register once. Join the live experience. Participate from your device. Stay connected across all three days.</p><button className="sx2-main-cta" onClick={()=>navigate('/summit-2026/register')}>ENTER SUMMIT <span>↗</span></button></section>
     </main>
     <footer className="sx2-footer"><div className="sx2-footer-brand"><span className="sx2-mark"><i/><i/><i/></span><div><b>AMERICAN SPACES NIGERIA</b><small>SUMMIT 2026 · PUBLIC DIPLOMACY</small></div></div><div className="sx2-footer-meta"><span>21—23 SEPTEMBER 2026</span><span>BLACK DIAMOND SUITES · LAGOS</span><span>#AmericanSpacesNG2026</span></div><button onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}>BACK TO TOP ↑</button></footer>
+    {ticker&&tickerVisible&&<div className="sx2-news-ticker" key={tickerKey} onAnimationEnd={event=>{if(event.animationName==='sx2NewsScroll')setTickerVisible(false)}}><div className="sx2-news-track"><span><b>FLASH NEWS</b>{ticker}</span><span><b>FLASH NEWS</b>{ticker}</span><span><b>FLASH NEWS</b>{ticker}</span><span><b>FLASH NEWS</b>{ticker}</span></div></div>}
   </div>
 }
