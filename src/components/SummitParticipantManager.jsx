@@ -17,6 +17,9 @@ function csvEscape(value) {
 
 export default function SummitParticipantManager() {
   const [participants, setParticipants] = useState([])
+  const [attendance, setAttendance] = useState([])
+  const [attendanceDay, setAttendanceDay] = useState('day1')
+  const [pollVotes, setPollVotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState('')
   const [error, setError] = useState('')
@@ -25,20 +28,26 @@ export default function SummitParticipantManager() {
   const loadParticipants = useCallback(async () => {
     if (!summitSupabase) return
     setError('')
-    const [{ data, error: queryError }, { data: attendanceRows, error: attendanceError }] = await Promise.all([
+    const [{ data, error: queryError }, { data: attendanceRows, error: attendanceError }, { data: voteRows, error: voteError }] = await Promise.all([
       summitSupabase.from('participants')
         .select('id,display_name,anonymous_parking,device_id,registered_at,last_seen_at')
         .order('registered_at', { ascending: false }),
       summitSupabase.from('participant_attendance')
         .select('participant_id,day_id,first_seen_at,last_seen_at')
         .order('first_seen_at', { ascending: false }),
+      summitSupabase.from('poll_responses')
+        .select('participant_id,poll_id,option,created_at')
+        .not('participant_id', 'is', null)
+        .order('created_at', { ascending: false }),
     ])
     if (queryError) {
       setError(queryError.message)
     } else {
       setParticipants(data || [])
       setAttendance(attendanceError ? [] : (attendanceRows || []))
+      setPollVotes(voteError ? [] : (voteRows || []))
       if (attendanceError) setError(attendanceError.message)
+      if (voteError) setError(voteError.message)
     }
     setLoading(false)
   }, [])
@@ -64,16 +73,18 @@ export default function SummitParticipantManager() {
     const named = participants.filter(p => !p.anonymous_parking).length
     const anonymous = participants.filter(p => p.anonymous_parking).length
     const dayAttendance = new Set(attendance.filter(a => a.day_id === attendanceDay).map(a => a.participant_id)).size
-    return { active, named, anonymous, dayAttendance }
+    const pollVoters = new Set(pollVotes.map(v => v.participant_id)).size
+    return { active, named, anonymous, dayAttendance, pollVoters }
   }, [participants])
 
   const exportCsv = () => {
-    const header = ['Participant Name', 'Registered At', 'Last Seen', 'Parking Lot Display', 'Device ID']
+    const header = ['Participant Name', 'Registered At', 'Last Seen', 'Parking Lot Display', 'Latest Poll Vote', 'Device ID']
     const rows = participants.map(p => [
       p.display_name,
       formatDate(p.registered_at),
       formatDate(p.last_seen_at),
       p.anonymous_parking ? 'Anonymous' : 'Named',
+      pollVotes.find(v => v.participant_id === p.id)?.option || 'No vote recorded',
       p.device_id,
     ])
     const csv = [header, ...rows].map(row => row.map(csvEscape).join(',')).join('\r\n')
@@ -130,10 +141,10 @@ export default function SummitParticipantManager() {
           <div className="pm-stat"><strong>{stats.active}</strong><span>Active ≤15 min</span></div>
           <div className="pm-stat"><strong>{stats.named}</strong><span>Named Parking</span></div>
           <div className="pm-stat"><strong>{stats.anonymous}</strong><span>Anonymous Parking</span></div>
-          <div className="pm-stat"><strong>{stats.dayAttendance}</strong><span>Attendance · {attendanceDay.toUpperCase()}</span></div>
+          <div className="pm-stat"><strong>{stats.dayAttendance}</strong><span>Attendance · {attendanceDay.toUpperCase()}</span></div><div className="pm-stat"><strong>{stats.pollVoters}</strong><span>Participants With Votes</span></div>
         </div>
-        {loading ? <div className="pm-empty">Loading participant registrations…</div> : participants.length === 0 ? <div className="pm-empty">No participant registrations yet.</div> : <div className="pm-table-wrap"><table className="pm-table"><thead><tr><th>Participant</th><th>Registered</th><th>Last Seen</th><th>Attendance</th><th>Parking Lot</th><th>Action</th></tr></thead><tbody>{participants.map(p => { const active = p.last_seen_at && Date.now() - new Date(p.last_seen_at).getTime() <= 15*60*1000; return <tr key={p.id}><td><strong>{p.display_name || 'Unnamed'}</strong></td><td>{formatDate(p.registered_at)}</td><td>{formatDate(p.last_seen_at)}</td><td><span className={`pm-status ${attendance.some(a=>a.participant_id===p.id && a.day_id===attendanceDay)?'active':'idle'}`}>{attendance.some(a=>a.participant_id===p.id && a.day_id===attendanceDay)?'ATTENDED':'NOT RECORDED'}</span></td><td>{p.anonymous_parking?'Anonymous':'Named'}</td><td><button className="pm-delete" disabled={deletingId===p.id} onClick={() => void deleteParticipant(p)}>{deletingId===p.id?'Deleting…':'Delete'}</button></td></tr> })}</tbody></table></div>}
-        <div className="pm-note">Attendance is recorded automatically by the Summit heartbeat against the day currently on air. The dashboard also shows the current last-seen status separately.  Deleting a participant removes the registration and that participant's saved notes. It does not delete Summit programme content, presentations, Parking Lot posts, polls or announcements.</div>
+        {loading ? <div className="pm-empty">Loading participant registrations…</div> : participants.length === 0 ? <div className="pm-empty">No participant registrations yet.</div> : <div className="pm-table-wrap"><table className="pm-table"><thead><tr><th>Participant</th><th>Registered</th><th>Last Seen</th><th>Attendance</th><th>Parking Lot</th><th>Latest Poll Vote</th><th>Action</th></tr></thead><tbody>{participants.map(p => { const active = p.last_seen_at && Date.now() - new Date(p.last_seen_at).getTime() <= 15*60*1000; const latestVote=pollVotes.find(v=>v.participant_id===p.id); return <tr key={p.id}><td><strong>{p.display_name || 'Unnamed'}</strong></td><td>{formatDate(p.registered_at)}</td><td>{formatDate(p.last_seen_at)}</td><td><span className={`pm-status ${attendance.some(a=>a.participant_id===p.id && a.day_id===attendanceDay)?'active':'idle'}`}>{attendance.some(a=>a.participant_id===p.id && a.day_id===attendanceDay)?'ATTENDED':'NOT RECORDED'}</span></td><td>{p.anonymous_parking?'Anonymous':'Named'}</td><td>{latestVote?<><strong style={{color:'#173b68'}}>{latestVote.option}</strong><div style={{fontSize:8,color:'#718096',marginTop:2}}>{formatDate(latestVote.created_at)}</div></>:'—'}</td><td><button className="pm-delete" disabled={deletingId===p.id} onClick={() => void deleteParticipant(p)}>{deletingId===p.id?'Deleting…':'Delete'}</button></td></tr> })}</tbody></table></div>}
+        <div className="pm-note">Attendance is recorded automatically by the Summit heartbeat against the day currently on air. The dashboard also shows the current last-seen status separately.  Deleting a participant removes the registration, saved notes and linked poll responses. It does not delete Summit programme content, presentations, Parking Lot posts, polls or announcements.</div>
       </div>
     </div>
   )
